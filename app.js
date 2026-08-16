@@ -1,6 +1,6 @@
 /**
  * Google Cloud ArcadeCalc - Production Client Engine
- * Dual-Mode API & Fallback Scraper for GitHub Pages & Local Hosting
+ * Clean Input Engine for GitHub Pages & Local Hosting
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,9 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const helpModal = document.querySelector('#help-modal');
   const modalCloseBtn = document.querySelector('#modal-close-btn');
 
-  // Theme Toggle & Presets
+  // Theme Toggle
   const themeToggleBtn = document.querySelector('#theme-toggle-btn');
-  const presetChips = document.querySelectorAll('.preset-chip-btn');
 
   // Switch View Helper
   function switchView(viewName) {
@@ -72,17 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Preset Chips
-  presetChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      const url = chip.getAttribute('data-url');
-      if (url && profileUrlInput) {
-        profileUrlInput.value = url;
-        processCalculation(url);
-      }
-    });
-  });
-
   // Non-Skill Completion Badges Excluded List
   const EXCLUDED_COMPLETION_BADGES = [
     'safe spaces',
@@ -95,6 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Dynamic Profile Evaluation Handler (Local API + GitHub Pages Fallback Engine)
   async function processCalculation(url) {
+    if (!url || !url.trim()) return;
+
     if (heroCalcBtn) {
       heroCalcBtn.disabled = true;
       heroCalcBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><br>Evaluating...';
@@ -129,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
       switchView('dashboard');
     } else {
       alert('Could not fetch public profile data. Please verify that your profile URL is public.');
-      // Render zero state
       renderDashboard({
         userHandle: 'Google Cloud Learner',
         initial: 'G',
@@ -141,8 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         completionBadges: 0,
         arcadePoints: 0.0,
         bonusPoints: 0,
-        totalPoints: 0.0,
-        weeklyActivity: { Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0 }
+        totalPoints: 0.0
       });
       switchView('dashboard');
     }
@@ -160,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
       cleanUrl = 'https://' + cleanUrl;
     }
 
-    // CORS Proxies Pipeline
     const proxies = [
       `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`,
       `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`,
@@ -194,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Badge Cards & Modals
     const badgeElements = doc.querySelectorAll('div.profile-badge');
 
-    // Build modal ID -> text mapping
     const modalTexts = {};
     doc.querySelectorAll('ql-dialog').forEach(dialog => {
       if (dialog.id) {
@@ -208,9 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const skillBadges = [];
     const completionBadges = [];
 
-    const weeklyActivity = { Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0 };
-    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
     badgeElements.forEach((b, i) => {
       const titleEl = b.querySelector('span.ql-title-medium');
       const title = titleEl ? titleEl.textContent.trim() : '';
@@ -218,21 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const lower = title.toLowerCase();
 
-      // Completion Date parsing
-      const dateEl = b.querySelector('span.ql-body-medium');
-      const dateText = dateEl ? dateEl.textContent.trim() : '';
-      const dateMatch = dateText.match(/Earned\s+([A-Za-z]+\s+\d+,\s+\d{4})/);
-      if (dateMatch) {
-        const dt = new Date(dateMatch[1]);
-        if (!isNaN(dt.getTime())) {
-          const dayName = dayNames[dt.getDay()];
-          if (weeklyActivity[dayName] !== undefined) {
-            weeklyActivity[dayName]++;
-          }
-        }
-      }
-
-      // Classification
       if (lower.includes('special monthly') || lower.includes('special game') || lower.includes('monumental')) {
         specialGames.push(title);
       } else if (['arcade base camp', 'level 1', 'level 2', 'level 3', 'arcade voyage', 'arcade adventure', 'arcade simulator', 'arcade trail', 'arcade game', 'base camp'].some(k => lower.includes(k))) {
@@ -290,18 +258,23 @@ document.addEventListener('DOMContentLoaded', () => {
       completionBadges: completionBadges.length,
       arcadePoints: Math.round(arcadePoints * 10) / 10,
       bonusPoints,
-      totalPoints: Math.round(totalPoints * 10) / 10,
-      weeklyActivity
+      totalPoints: Math.round(totalPoints * 10) / 10
     };
   }
 
   // Render Scraped Profile Data onto Dashboard UI
   function renderDashboard(data) {
-    // User Profile Card
+    // User Profile Card & Top Nav Avatar
     const avatarEl = document.querySelector('#avatar-initial');
+    const navAvatarEl = document.querySelector('#nav-avatar-initial');
     const nameEl = document.querySelector('#user-name-title');
-    if (avatarEl) avatarEl.textContent = data.initial || 'G';
-    if (nameEl) nameEl.textContent = data.userHandle || 'Google Cloud Learner';
+
+    const initial = data.initial || 'G';
+    const name = data.userHandle || 'Google Cloud Learner';
+
+    if (avatarEl) avatarEl.textContent = initial;
+    if (navAvatarEl) navAvatarEl.textContent = initial;
+    if (nameEl) nameEl.textContent = name;
 
     // Stats Card
     const formulaArcade = document.querySelector('#val-arcade-raw');
@@ -470,42 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (swagReqEl) swagReqEl.textContent = `${(50 - totalPts).toFixed(1)} Points Needed for Swag`;
     }
 
-    // --- 3. DYNAMIC WEEKLY BADGE ACTIVITY LINKED TO COMPLETION DATES ---
-    const wa = data.weeklyActivity || { Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0 };
-    const counts = [wa.Sunday || 0, wa.Monday || 0, wa.Tuesday || 0, wa.Wednesday || 0, wa.Thursday || 0, wa.Friday || 0, wa.Saturday || 0];
-    const maxVal = Math.max(...counts, 1);
-
-    const y4 = document.querySelector('#y-val-4');
-    const y3 = document.querySelector('#y-val-3');
-    const y2 = document.querySelector('#y-val-2');
-    const y1 = document.querySelector('#y-val-1');
-    const y0 = document.querySelector('#y-val-0');
-
-    if (y4) y4.textContent = maxVal;
-    if (y3) y3.textContent = Math.round(maxVal * 0.75);
-    if (y2) y2.textContent = Math.round(maxVal * 0.5);
-    if (y1) y1.textContent = Math.round(maxVal * 0.25);
-    if (y0) y0.textContent = '0';
-
-    function updateDayBar(dayKey, valId, barId) {
-      const valBadge = document.querySelector(valId);
-      const barFill = document.querySelector(barId);
-      const count = wa[dayKey] || 0;
-      const heightPct = count > 0 ? Math.max((count / maxVal) * 100, 8) : 0;
-
-      if (valBadge) valBadge.textContent = count;
-      if (barFill) barFill.style.height = `${heightPct}%`;
-    }
-
-    updateDayBar('Sunday', '#val-sun', '#bar-sun');
-    updateDayBar('Monday', '#val-mon', '#bar-mon');
-    updateDayBar('Tuesday', '#val-tue', '#bar-tue');
-    updateDayBar('Wednesday', '#val-wed', '#bar-wed');
-    updateDayBar('Thursday', '#val-thu', '#bar-thu');
-    updateDayBar('Friday', '#val-fri', '#bar-fri');
-    updateDayBar('Saturday', '#val-sat', '#bar-sat');
-
-    // --- 4. BOTTOM BADGE CATEGORIES TABLE ---
+    // --- 3. BOTTOM BADGE CATEGORIES TABLE ---
     const pillSeason = document.querySelector('#season-badge-pill');
     const rowSkillCount = document.querySelector('#row-skill-count');
     const rowSkillPts = document.querySelector('#row-skill-pts');
@@ -536,10 +474,5 @@ document.addEventListener('DOMContentLoaded', () => {
         processCalculation(url);
       }
     });
-  }
-
-  // Initial Load
-  if (profileUrlInput && profileUrlInput.value) {
-    processCalculation(profileUrlInput.value);
   }
 });
