@@ -1,6 +1,6 @@
 /**
- * Google Cloud ArcadeCalc - Prototype Script
- * Dynamic Profile Evaluation Engine & Linked Weekly Completion Activity
+ * Google Cloud ArcadeCalc - Production Client Engine
+ * Dual-Mode API & Fallback Scraper for GitHub Pages & Local Hosting
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -83,29 +83,53 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Dynamic Profile Evaluation Handler
+  // Non-Skill Completion Badges Excluded List
+  const EXCLUDED_COMPLETION_BADGES = [
+    'safe spaces',
+    'introduction to generative ai',
+    'introduction to large language models',
+    'introduction to responsible ai',
+    'introduction to image generation',
+    'build a certification study guide: ace exam prep'
+  ];
+
+  // Dynamic Profile Evaluation Handler (Local API + GitHub Pages Fallback Engine)
   async function processCalculation(url) {
     if (heroCalcBtn) {
       heroCalcBtn.disabled = true;
       heroCalcBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><br>Evaluating...';
     }
 
+    let calculatedData = null;
+
+    // 1. Try Local Scraper Server API (/api/calculate) first
     try {
       const response = await fetch('/api/calculate?url=' + encodeURIComponent(url));
-      if (!response.ok) {
-        throw new Error('Could not fetch profile data');
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        renderDashboard(data);
-        switchView('dashboard');
-      } else {
-        alert('Could not parse profile URL. Please check that your profile is public.');
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.success) {
+          calculatedData = data;
+        }
       }
     } catch (err) {
-      console.error('Calculation error:', err);
+      // Local backend not running (e.g. hosted on GitHub Pages)
+    }
+
+    // 2. If Local API is unavailable (GitHub Pages deployment), use Client-Side Scraper Engine
+    if (!calculatedData) {
+      try {
+        calculatedData = await scrapeProfileClientSide(url);
+      } catch (err) {
+        console.error('Client-side calculation error:', err);
+      }
+    }
+
+    if (calculatedData && calculatedData.success) {
+      renderDashboard(calculatedData);
+      switchView('dashboard');
+    } else {
+      alert('Could not fetch public profile data. Please verify that your profile URL is public.');
+      // Render zero state
       renderDashboard({
         userHandle: 'Google Cloud Learner',
         initial: 'G',
@@ -121,15 +145,157 @@ document.addEventListener('DOMContentLoaded', () => {
         weeklyActivity: { Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0 }
       });
       switchView('dashboard');
-    } finally {
-      if (heroCalcBtn) {
-        heroCalcBtn.disabled = false;
-        heroCalcBtn.innerHTML = 'Calculate<br>Points';
-      }
+    }
+
+    if (heroCalcBtn) {
+      heroCalcBtn.disabled = false;
+      heroCalcBtn.innerHTML = 'Calculate<br>Points';
     }
   }
 
-  // Render Scraped Profile Data & Dynamically Update Dashboard
+  // Client-Side Scraper Engine for GitHub Pages
+  async function scrapeProfileClientSide(targetUrl) {
+    let cleanUrl = targetUrl.trim();
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+      cleanUrl = 'https://' + cleanUrl;
+    }
+
+    // CORS Proxies Pipeline
+    const proxies = [
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`,
+      `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`,
+      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(cleanUrl)}`
+    ];
+
+    let html = null;
+    for (const proxyUrl of proxies) {
+      try {
+        const res = await fetch(proxyUrl);
+        if (res.ok) {
+          html = await res.text();
+          if (html && html.includes('profile-badge')) break;
+        }
+      } catch (e) {
+        continue;
+      }
+    }
+
+    if (!html) {
+      throw new Error('Failed to fetch profile HTML via CORS proxies');
+    }
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // 1. User Name
+    const nameEl = doc.querySelector('h1.ql-display-small');
+    const userHandle = nameEl ? nameEl.textContent.trim() : 'Google Cloud Learner';
+
+    // 2. Badge Cards & Modals
+    const badgeElements = doc.querySelectorAll('div.profile-badge');
+
+    // Build modal ID -> text mapping
+    const modalTexts = {};
+    doc.querySelectorAll('ql-dialog').forEach(dialog => {
+      if (dialog.id) {
+        modalTexts[dialog.id] = dialog.textContent.toLowerCase();
+      }
+    });
+
+    const arcadeGames = [];
+    const triviaBadges = [];
+    const specialGames = [];
+    const skillBadges = [];
+    const completionBadges = [];
+
+    const weeklyActivity = { Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0 };
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    badgeElements.forEach((b, i) => {
+      const titleEl = b.querySelector('span.ql-title-medium');
+      const title = titleEl ? titleEl.textContent.trim() : '';
+      if (!title) return;
+
+      const lower = title.toLowerCase();
+
+      // Completion Date parsing
+      const dateEl = b.querySelector('span.ql-body-medium');
+      const dateText = dateEl ? dateEl.textContent.trim() : '';
+      const dateMatch = dateText.match(/Earned\s+([A-Za-z]+\s+\d+,\s+\d{4})/);
+      if (dateMatch) {
+        const dt = new Date(dateMatch[1]);
+        if (!isNaN(dt.getTime())) {
+          const dayName = dayNames[dt.getDay()];
+          if (weeklyActivity[dayName] !== undefined) {
+            weeklyActivity[dayName]++;
+          }
+        }
+      }
+
+      // Classification
+      if (lower.includes('special monthly') || lower.includes('special game') || lower.includes('monumental')) {
+        specialGames.push(title);
+      } else if (['arcade base camp', 'level 1', 'level 2', 'level 3', 'arcade voyage', 'arcade adventure', 'arcade simulator', 'arcade trail', 'arcade game', 'base camp'].some(k => lower.includes(k))) {
+        arcadeGames.push(title);
+      } else if (lower.includes('trivia') || lower.includes('spans and plans') || lower.includes('weekly challenge')) {
+        triviaBadges.push(title);
+      } else {
+        const btn = b.querySelector('ql-button');
+        const modalId = btn ? btn.getAttribute('modal') : `public-profile-award-modal-${i}`;
+        const modalDesc = modalTexts[modalId] || '';
+
+        let isSkillBadge = modalDesc.includes('skill badge') || lower.includes('skill badge');
+        if (title.startsWith('[Deprecated]') || EXCLUDED_COMPLETION_BADGES.includes(lower)) {
+          isSkillBadge = false;
+        }
+
+        if (isSkillBadge) {
+          skillBadges.push(title);
+        } else {
+          completionBadges.push(title);
+        }
+      }
+    });
+
+    const ptsGames = arcadeGames.length * 1.0;
+    const ptsTrivia = triviaBadges.length * 1.0;
+    const ptsSpecial = specialGames.length * 2.0;
+    const ptsSkills = skillBadges.length * 0.5;
+
+    const arcadePoints = ptsGames + ptsTrivia + ptsSpecial + ptsSkills;
+
+    let bonusPoints = 0;
+    if (arcadeGames.length >= 10 && skillBadges.length >= 66) {
+      bonusPoints = 35;
+    } else if (arcadeGames.length >= 8 && skillBadges.length >= 42) {
+      bonusPoints = 25;
+    } else if (arcadeGames.length >= 6 && skillBadges.length >= 28) {
+      bonusPoints = 15;
+    } else if (arcadeGames.length >= 4 && skillBadges.length >= 14) {
+      bonusPoints = 5;
+    }
+
+    const totalPoints = arcadePoints + bonusPoints;
+    const initial = userHandle ? userHandle[0].toUpperCase() : 'G';
+
+    return {
+      success: true,
+      userHandle,
+      initial,
+      totalBadges: badgeElements.length,
+      arcadeGames: arcadeGames.length,
+      triviaBadges: triviaBadges.length,
+      specialGames: specialGames.length,
+      skillBadges: skillBadges.length,
+      completionBadges: completionBadges.length,
+      arcadePoints: Math.round(arcadePoints * 10) / 10,
+      bonusPoints,
+      totalPoints: Math.round(totalPoints * 10) / 10,
+      weeklyActivity
+    };
+  }
+
+  // Render Scraped Profile Data onto Dashboard UI
   function renderDashboard(data) {
     // User Profile Card
     const avatarEl = document.querySelector('#avatar-initial');
@@ -309,7 +475,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const counts = [wa.Sunday || 0, wa.Monday || 0, wa.Tuesday || 0, wa.Wednesday || 0, wa.Thursday || 0, wa.Friday || 0, wa.Saturday || 0];
     const maxVal = Math.max(...counts, 1);
 
-    // Update Y-Axis Scale
     const y4 = document.querySelector('#y-val-4');
     const y3 = document.querySelector('#y-val-3');
     const y2 = document.querySelector('#y-val-2');
@@ -322,7 +487,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (y1) y1.textContent = Math.round(maxVal * 0.25);
     if (y0) y0.textContent = '0';
 
-    // Helper to set bar height and tooltip badge
     function updateDayBar(dayKey, valId, barId) {
       const valBadge = document.querySelector(valId);
       const barFill = document.querySelector(barId);
