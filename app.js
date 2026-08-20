@@ -661,7 +661,7 @@ document.addEventListener('DOMContentLoaded', () => {
       category: 'Skill',
       level: title.includes('Advanced') || title.includes('Architecture') ? 'Advanced' : (title.includes('Foundational') || title.includes('Basics') || title.includes('Introductory') ? 'Introductory' : 'Intermediate'),
       labsOrPts: '4-5 Labs',
-      link: 'https://skills.google/catalog?skill-badge%5B%5D=skill-badge',
+      link: `https://www.skills.google/catalog?keywords=${encodeURIComponent(title)}`,
       icon: 'fa-certificate'
     }))
   ];
