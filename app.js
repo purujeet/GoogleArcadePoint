@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'build a certification study guide: ace exam prep'
   ];
 
-  // Dynamic Profile Evaluation Handler (Local API + GitHub Pages Fallback Engine)
+  // Dynamic Profile Evaluation Handler
   async function processCalculation(url) {
     if (!url || !url.trim()) return;
 
@@ -120,10 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     } catch (err) {
-      // Local backend not running (e.g. hosted on GitHub Pages)
+      // Local backend not running
     }
 
-    // 2. If Local API is unavailable (GitHub Pages deployment), use Client-Side Scraper Engine
+    // 2. Client-Side Scraper Fallback
     if (!calculatedData) {
       try {
         calculatedData = await scrapeProfileClientSide(url);
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Client-Side Scraper Engine for GitHub Pages
+  // Client-Side Scraper Engine
   async function scrapeProfileClientSide(targetUrl) {
     let cleanUrl = targetUrl.trim();
     if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
@@ -192,11 +192,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
-    // 1. User Name
     const nameEl = doc.querySelector('h1.ql-display-small');
     const userHandle = nameEl ? nameEl.textContent.trim() : 'Google Cloud Learner';
 
-    // 2. Badge Cards & Modals
     const badgeElements = doc.querySelectorAll('div.profile-badge');
 
     const modalTexts = {};
@@ -317,7 +315,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function selectMilestone(milestoneKey) {
     const config = MILESTONE_DEFINITIONS[milestoneKey] || MILESTONE_DEFINITIONS.ultimate;
 
-    // Highlight timeline node
     document.querySelectorAll('.interactive-node').forEach(node => {
       if (node.getAttribute('data-milestone') === milestoneKey) {
         node.classList.add('active-selected');
@@ -432,8 +429,6 @@ document.addEventListener('DOMContentLoaded', () => {
       targetPts = 50;
     }
 
-    const currentXP = (totalPts - basePts).toFixed(1);
-    const neededXP = (targetPts - basePts).toFixed(0);
     const xpPct = Math.min(((totalPts - basePts) / (targetPts - basePts)) * 100, 100);
 
     if (levelTitleEl) levelTitleEl.innerHTML = `<i class="fa-solid fa-bolt" style="color: var(--amber-accent);"></i> ${levelName}`;
@@ -449,7 +444,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const games = data.arcadeGames || 0;
     const skills = data.skillBadges || 0;
     const trivia = data.triviaBadges || 0;
-    const totalPts = data.totalPoints || 0;
 
     const list = [
       {
@@ -510,6 +504,152 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
+  // --- INCOMPLETE & RECOMMENDED CHALLENGE BADGES ENGINE ---
+  const RECOMMENDED_BADGES_LIST = [
+    {
+      id: 'rec-1',
+      title: 'Arcade Re-Trail: Vaults & Vectors',
+      category: 'Game',
+      level: 'Intermediate',
+      labsOrPts: '1 Points',
+      link: 'https://www.cloudskillsboost.google/games/5225',
+      icon: 'fa-gamepad'
+    },
+    {
+      id: 'rec-2',
+      title: 'Implement DevOps Workflows in Google Cloud',
+      category: 'Skill',
+      level: 'Intermediate',
+      labsOrPts: '4 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/341',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-3',
+      title: 'Create a Streaming Data Lake on Cloud Storage',
+      category: 'Skill',
+      level: 'Introductory',
+      labsOrPts: '4 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/627',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-4',
+      title: 'Build Google Cloud Infrastructure for AWS Professionals',
+      category: 'Skill',
+      level: 'Intermediate',
+      labsOrPts: '5 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/649',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-5',
+      title: 'Implement Multimodal Vector Search with BigQuery',
+      category: 'Skill',
+      level: 'Intermediate',
+      labsOrPts: '4 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/978',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-6',
+      title: 'Protect Cloud Traffic with Chrome Enterprise Premium Security',
+      category: 'Skill',
+      level: 'Intermediate',
+      labsOrPts: '4 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/1020',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-7',
+      title: 'Perform Foundational Infrastructure Tasks in Google Cloud',
+      category: 'Skill',
+      level: 'Introductory',
+      labsOrPts: '5 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/639',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-8',
+      title: 'Set Up an App Dev Environment in Google Cloud',
+      category: 'Skill',
+      level: 'Introductory',
+      labsOrPts: '4 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/637',
+      icon: 'fa-certificate'
+    }
+  ];
+
+  let currentBadgeCategoryFilter = 'all';
+  let currentSearchQuery = '';
+
+  function renderRecommendedBadges() {
+    const grid = document.querySelector('#recommended-badges-grid');
+    if (!grid) return;
+
+    const filtered = RECOMMENDED_BADGES_LIST.filter(item => {
+      const matchCat = currentBadgeCategoryFilter === 'all' || item.category.toLowerCase() === currentBadgeCategoryFilter;
+      const matchSearch = !currentSearchQuery || item.title.toLowerCase().includes(currentSearchQuery.toLowerCase());
+      return matchCat && matchSearch;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-dim);">No challenge badges found matching your search.</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(item => `
+      <div class="challenge-card">
+        <div>
+          <div class="challenge-img-wrapper">
+            <span class="challenge-tag-badge ${item.category === 'Game' ? 'tag-game-type' : 'tag-skill-type'}">
+              ${item.category}
+            </span>
+            <i class="fa-solid ${item.icon}" style="font-size: 3rem; color: ${item.category === 'Game' ? 'var(--blue-accent)' : 'var(--green-accent)'};"></i>
+          </div>
+
+          <h4 class="challenge-title">${item.title}</h4>
+
+          <div class="challenge-meta-row">
+            <span class="challenge-level-pill">${item.level}</span>
+            <span><i class="fa-solid fa-fire" style="color: var(--amber-accent);"></i> ${item.labsOrPts}</span>
+          </div>
+        </div>
+
+        <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="start-challenge-btn">
+          Start Challenge <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i>
+        </a>
+      </div>
+    `).join('');
+  }
+
+  // Filter Chips Listeners
+  const chipAll = document.querySelector('#chip-filter-all');
+  const chipGame = document.querySelector('#chip-filter-game');
+  const chipSkill = document.querySelector('#chip-filter-skill');
+  const searchInput = document.querySelector('#badge-search-input');
+
+  if (chipAll) chipAll.onclick = () => { setActiveChip(chipAll, 'all'); };
+  if (chipGame) chipGame.onclick = () => { setActiveChip(chipGame, 'game'); };
+  if (chipSkill) chipSkill.onclick = () => { setActiveChip(chipSkill, 'skill'); };
+
+  function setActiveChip(btn, cat) {
+    [chipAll, chipGame, chipSkill].forEach(c => c && c.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    currentBadgeCategoryFilter = cat;
+    renderRecommendedBadges();
+  }
+
+  if (searchInput) {
+    searchInput.oninput = (e) => {
+      currentSearchQuery = e.target.value.trim();
+      renderRecommendedBadges();
+    };
+  }
+
+  // Initial render of recommended badges
+  renderRecommendedBadges();
+
   // Render Scraped Profile Data onto Dashboard UI
   function renderDashboard(data) {
     currentProfileData = data;
@@ -529,6 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gamification Engines
     updateXPLevel(data.totalPoints || 0);
     renderAchievements(data);
+    renderRecommendedBadges();
 
     // Stats Card
     const formulaArcade = document.querySelector('#val-arcade-raw');
@@ -589,7 +730,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const bonusText = document.querySelector('#bonus-amount-text');
     if (bonusText) bonusText.textContent = `+${data.bonusPoints || 0} Bonus Points Earned`;
 
-    // Auto-select highest achieved milestone (or ultimate default)
     let autoMilestone = 'ultimate';
     if (!hasM1) autoMilestone = 'm1';
     else if (!hasM2) autoMilestone = 'm2';

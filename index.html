@@ -337,6 +337,7 @@
                     <div class="tier-circle"><i class="fa-solid fa-check"></i></div>
                     <span class="tier-name">Start</span>
                     <span class="tier-req">0 pts</span>
+                    <span class="tier-sub-status">Unlocked</span>
                   </div>
 
                   <div class="tier-node" id="swag-node-trooper">
@@ -448,6 +449,36 @@
                     </tr>
                   </tbody>
                 </table>
+              </article>
+
+              <!-- Incomplete & Recommended Skill & Game Badges Section -->
+              <article class="dash-card" style="margin-top: 1.5rem;">
+                <div class="card-title-row" style="flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                  <div>
+                    <h3 class="card-title" style="font-size: 1.2rem;"><i class="fa-solid fa-fire" style="color: var(--google-red);"></i> Incomplete & Recommended Badges</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.25rem;">Complete these active Google Cloud challenges to earn points toward your next milestone</p>
+                  </div>
+                  
+                  <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                    <!-- Filter Chips -->
+                    <div class="badge-filter-chips">
+                      <button type="button" class="filter-chip active" id="chip-filter-all">All <span id="cnt-chip-all">8</span></button>
+                      <button type="button" class="filter-chip" id="chip-filter-game">Game <span id="cnt-chip-game">1</span></button>
+                      <button type="button" class="filter-chip" id="chip-filter-skill">Skill <span id="cnt-chip-skill">7</span></button>
+                    </div>
+
+                    <!-- Search Input Box -->
+                    <div class="badge-search-box">
+                      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                      <input type="text" id="badge-search-input" placeholder="Search badges..." class="badge-search-input">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Grid of Incomplete Badge Cards -->
+                <div class="recommended-badges-grid" id="recommended-badges-grid">
+                  <!-- Dynamically populated via app.js -->
+                </div>
               </article>
             </div>
 
