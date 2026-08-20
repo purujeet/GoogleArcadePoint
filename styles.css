@@ -348,14 +348,18 @@
 }
 
 [data-theme="light"] .start-challenge-btn {
-  background: #2563eb;
-  color: #ffffff;
-  font-weight: 600;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff !important;
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
 }
 
 [data-theme="light"] .start-challenge-btn:hover {
-  background: #1d4ed8;
-  color: #ffffff;
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
 }
 
 [data-theme="light"] table {
@@ -1676,22 +1680,26 @@ h1, h2, h3, h4, .card-title, .google-brand {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
   width: 100%;
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--blue-accent);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  padding: 0.6rem;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #7c3aed 100%);
+  color: #ffffff !important;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  padding: 0.65rem 1rem;
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
   transition: all var(--transition-normal);
 }
 
 .start-challenge-btn:hover {
-  background: var(--blue-accent);
-  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #8b5cf6 100%);
+  color: #ffffff !important;
+  border-color: rgba(96, 165, 250, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
 }
 
 .page-view {
