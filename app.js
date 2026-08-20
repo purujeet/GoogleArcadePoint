@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'build a certification study guide: ace exam prep'
   ];
 
-  // Dynamic Profile Evaluation Handler
+  // Dynamic Profile Evaluation Handler with Fail-Safe Reset
   async function processCalculation(url) {
     if (!url || !url.trim()) return;
 
@@ -108,85 +108,110 @@ document.addEventListener('DOMContentLoaded', () => {
       heroCalcBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><br>Evaluating...';
     }
 
-    let calculatedData = null;
-
-    // 1. Try Local Scraper Server API (/api/calculate) first
     try {
-      const response = await fetch('/api/calculate?url=' + encodeURIComponent(url));
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.success) {
-          calculatedData = data;
+      let calculatedData = null;
+
+      // 1. Try local server API ONLY if running on localhost / local development environment
+      const isLocalEnvironment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      if (isLocalEnvironment) {
+        try {
+          const response = await fetch('/api/calculate?url=' + encodeURIComponent(url));
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.success) {
+              calculatedData = data;
+            }
+          }
+        } catch (err) {
+          console.warn('Local server endpoint unavailable, using client-side scraper fallback');
         }
       }
-    } catch (err) {
-      // Local backend not running
-    }
 
-    // 2. Client-Side Scraper Fallback
-    if (!calculatedData) {
-      try {
+      // 2. Client-Side Scraper Engine for Hosted Environments (GitHub Pages / Web)
+      if (!calculatedData) {
         calculatedData = await scrapeProfileClientSide(url);
-      } catch (err) {
-        console.error('Client-side calculation error:', err);
       }
-    }
 
-    if (calculatedData && calculatedData.success) {
-      renderDashboard(calculatedData);
-      switchView('dashboard');
-    } else {
-      alert('Could not fetch public profile data. Please verify that your profile URL is public.');
-      renderDashboard({
-        userHandle: 'Google Cloud Learner',
-        initial: 'G',
-        totalBadges: 0,
-        arcadeGames: 0,
-        triviaBadges: 0,
-        specialGames: 0,
-        skillBadges: 0,
-        completionBadges: 0,
-        arcadePoints: 0.0,
-        bonusPoints: 0,
-        totalPoints: 0.0
-      });
-      switchView('dashboard');
-    }
-
-    if (heroCalcBtn) {
-      heroCalcBtn.disabled = false;
-      heroCalcBtn.innerHTML = 'Calculate<br>Points';
+      if (calculatedData && calculatedData.success) {
+        renderDashboard(calculatedData);
+        switchView('dashboard');
+      } else {
+        alert('Could not fetch public profile data. Please verify that your profile URL is set to Public on Google Skills Boost.');
+      }
+    } catch (err) {
+      console.error('Calculation Error:', err);
+      alert('Could not fetch public profile data. Please check that your profile link is public and try again.');
+    } finally {
+      // ALWAYS reset calculate button state so it never gets stuck on "Evaluating..."
+      if (heroCalcBtn) {
+        heroCalcBtn.disabled = false;
+        heroCalcBtn.innerHTML = 'Calculate<br>Points';
+      }
     }
   }
 
-  // Client-Side Scraper Engine
+  // Helper fetch with timeout
+  async function fetchWithTimeout(resource, options = {}) {
+    const { timeout = 6000 } = options;
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+      const response = await fetch(resource, {
+        ...options,
+        signal: controller.signal
+      });
+      clearTimeout(id);
+      return response;
+    } catch (error) {
+      clearTimeout(id);
+      throw error;
+    }
+  }
+
+  // Robust Client-Side Scraper Engine with Fast Multi-Proxy Strategy
   async function scrapeProfileClientSide(targetUrl) {
     let cleanUrl = targetUrl.trim();
     if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
       cleanUrl = 'https://' + cleanUrl;
     }
 
-    const proxies = [
-      `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`,
-      `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`,
-      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(cleanUrl)}`
-    ];
-
     let html = null;
-    for (const proxyUrl of proxies) {
-      try {
-        const res = await fetch(proxyUrl);
-        if (res.ok) {
-          html = await res.text();
-          if (html && html.includes('profile-badge')) break;
-        }
-      } catch (e) {
-        continue;
+
+    // Proxy Strategy 1: corsproxy.io
+    try {
+      const res = await fetchWithTimeout(`https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`, { timeout: 6000 });
+      if (res.ok) {
+        const text = await res.text();
+        if (text && text.includes('profile-badge')) html = text;
       }
+    } catch (e) {}
+
+    // Proxy Strategy 2: AllOrigins JSON API
+    if (!html) {
+      try {
+        const res = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(cleanUrl)}`, { timeout: 6000 });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.contents && json.contents.includes('profile-badge')) {
+            html = json.contents;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // Proxy Strategy 3: CodeTabs Proxy
+    if (!html) {
+      try {
+        const res = await fetchWithTimeout(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(cleanUrl)}`, { timeout: 6000 });
+        if (res.ok) {
+          const text = await res.text();
+          if (text && text.includes('profile-badge')) html = text;
+        }
+      } catch (e) {}
     }
 
     if (!html) {
-      throw new Error('Failed to fetch profile HTML via CORS proxies');
+      throw new Error('Failed to fetch public profile HTML via CORS proxies');
     }
 
     const parser = new DOMParser();
