@@ -532,156 +532,98 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // --- DYNAMIC INCOMPLETE BADGES ENGINE ---
+  // --- DYNAMIC INCOMPLETE BADGES ENGINE WITH MASTER CATALOG ---
   const MASTER_ARCADE_BADGES_CATALOG = [
-    {
-      id: 'rec-1',
-      title: 'Arcade Re-Trail: Vaults & Vectors',
-      category: 'Game',
-      level: 'Intermediate',
-      labsOrPts: '1 Points',
-      link: 'https://www.cloudskillsboost.google/games/5225',
-      icon: 'fa-gamepad'
-    },
-    {
-      id: 'rec-2',
-      title: 'Implement DevOps Workflows in Google Cloud',
-      category: 'Skill',
-      level: 'Intermediate',
-      labsOrPts: '4 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/341',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-3',
-      title: 'Create a Streaming Data Lake on Cloud Storage',
-      category: 'Skill',
-      level: 'Introductory',
-      labsOrPts: '4 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/627',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-4',
-      title: 'Build Google Cloud Infrastructure for AWS Professionals',
-      category: 'Skill',
-      level: 'Intermediate',
-      labsOrPts: '5 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/649',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-5',
-      title: 'Implement Multimodal Vector Search with BigQuery',
-      category: 'Skill',
-      level: 'Intermediate',
-      labsOrPts: '4 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/978',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-6',
-      title: 'Protect Cloud Traffic with Chrome Enterprise Premium Security',
-      category: 'Skill',
-      level: 'Intermediate',
-      labsOrPts: '4 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/1020',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-7',
-      title: 'Perform Foundational Infrastructure Tasks in Google Cloud',
-      category: 'Skill',
-      level: 'Introductory',
-      labsOrPts: '5 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/639',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-8',
-      title: 'Set Up an App Dev Environment in Google Cloud',
-      category: 'Skill',
-      level: 'Introductory',
-      labsOrPts: '4 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/637',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-9',
-      title: 'Create and Manage Cloud Spanner Instances',
-      category: 'Skill',
-      level: 'Intermediate',
-      labsOrPts: '4 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/638',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-10',
-      title: 'Deploy Kubernetes Applications on Google Kubernetes Engine',
-      category: 'Skill',
-      level: 'Intermediate',
-      labsOrPts: '5 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/640',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-11',
-      title: 'Develop GenAI Apps with Gemini and Streamlit',
-      category: 'Skill',
-      level: 'Advanced',
-      labsOrPts: '4 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/977',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-12',
-      title: 'Build Infrastructure with Terraform on Google Cloud',
-      category: 'Skill',
-      level: 'Intermediate',
-      labsOrPts: '5 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/641',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-13',
-      title: 'Analyze Big Data with BigQuery',
-      category: 'Skill',
-      level: 'Intermediate',
-      labsOrPts: '5 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/642',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-14',
-      title: 'Monitor and Log Google Cloud Services',
-      category: 'Skill',
-      level: 'Intermediate',
-      labsOrPts: '4 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/643',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-15',
-      title: 'Optimize Costs for Google Cloud Network & Compute',
-      category: 'Skill',
-      level: 'Intermediate',
-      labsOrPts: '5 Labs',
-      link: 'https://www.cloudskillsboost.google/course_templates/644',
-      icon: 'fa-certificate'
-    },
-    {
-      id: 'rec-16',
-      title: 'Arcade Base Camp: Cloud Essentials',
-      category: 'Game',
-      level: 'Introductory',
-      labsOrPts: '1 Points',
-      link: 'https://www.cloudskillsboost.google/games/5000',
-      icon: 'fa-gamepad'
-    }
+    // --- GAME BADGES ---
+    { title: 'Arcade Base Camp: Cloud Essentials', category: 'Game', level: 'Introductory', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5000', icon: 'fa-gamepad' },
+    { title: 'Level 1: Core Infrastructure and Security', category: 'Game', level: 'Intermediate', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5225', icon: 'fa-gamepad' },
+    { title: 'Level 2: Modern Application Deployment', category: 'Game', level: 'Intermediate', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5226', icon: 'fa-gamepad' },
+    { title: 'Level 3: Advanced App Operations', category: 'Game', level: 'Advanced', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5227', icon: 'fa-gamepad' },
+
+    // --- SKILL BADGES ---
+    { title: 'Perform Foundational Infrastructure Tasks in Google Cloud', category: 'Skill', level: 'Introductory', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/639', icon: 'fa-certificate' },
+    { title: 'Set Up an App Dev Environment in Google Cloud', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/637', icon: 'fa-certificate' },
+    { title: 'Implement DevOps Workflows in Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/341', icon: 'fa-certificate' },
+    { title: 'Create a Streaming Data Lake on Cloud Storage', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/627', icon: 'fa-certificate' },
+    { title: 'Build Google Cloud Infrastructure for AWS Professionals', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/649', icon: 'fa-certificate' },
+    { title: 'Implement Multimodal Vector Search with BigQuery', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/978', icon: 'fa-certificate' },
+    { title: 'Protect Cloud Traffic with Chrome Enterprise Premium Security', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/1020', icon: 'fa-certificate' },
+    { title: 'Deploy Kubernetes Applications on Google Kubernetes Engine', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/640', icon: 'fa-certificate' },
+    { title: 'Develop GenAI Apps with Gemini and Streamlit', category: 'Skill', level: 'Advanced', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/977', icon: 'fa-certificate' },
+    { title: 'Build Infrastructure with Terraform on Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/641', icon: 'fa-certificate' },
+    { title: 'Analyze Big Data with BigQuery', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/642', icon: 'fa-certificate' },
+    { title: 'Monitor and Log Google Cloud Services', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/643', icon: 'fa-certificate' },
+    { title: 'Optimize Costs for Google Cloud Network & Compute', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/644', icon: 'fa-certificate' },
+    { title: 'Create and Manage Cloud Spanner Instances', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/638', icon: 'fa-certificate' },
+    { title: 'Create ML Models with BigQuery ML', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/626', icon: 'fa-certificate' },
+    { title: 'Build Custom Processors with Document AI', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/720', icon: 'fa-certificate' },
+    { title: 'Build and Deploy Machine Learning Solutions on Vertex AI', category: 'Skill', level: 'Advanced', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/680', icon: 'fa-certificate' },
+    { title: 'Build generative virtual agents with API integrations', category: 'Skill', level: 'Advanced', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/950', icon: 'fa-certificate' },
+    { title: 'Cloud Architecture: Design, Implement, and Manage', category: 'Skill', level: 'Advanced', labsOrPts: '6 Labs', link: 'https://www.cloudskillsboost.google/course_templates/650', icon: 'fa-certificate' },
+    { title: 'Automate Data Capture at Scale with Document AI', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/721', icon: 'fa-certificate' },
+    { title: 'Classify Images with TensorFlow on Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/651', icon: 'fa-certificate' },
+    { title: 'Configure your Workplace: Google Workspace for IT Admins', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/652', icon: 'fa-certificate' },
+    { title: 'Prepare Data for Looker Dashboards and Reports', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/653', icon: 'fa-certificate' },
+    { title: 'App Building with AppSheet', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/654', icon: 'fa-certificate' },
+    { title: 'Building Complex End to End Self-Service Experiences in Dialogflow CX', category: 'Skill', level: 'Advanced', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/655', icon: 'fa-certificate' },
+    { title: 'Set Up a Network Load Balancer in Google Cloud', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/656', icon: 'fa-certificate' },
+    { title: 'Deploy and Manage Cloud Environments with Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/657', icon: 'fa-certificate' },
+    { title: 'Build a Serverless Web App in Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/658', icon: 'fa-certificate' },
+    { title: 'Build Resilient Streaming Analytics Systems on Google Cloud', category: 'Skill', level: 'Advanced', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/659', icon: 'fa-certificate' },
+    { title: 'Build a Website on Google Cloud', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/660', icon: 'fa-certificate' },
+    { title: 'Derive Insights from BigQuery Data', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/661', icon: 'fa-certificate' },
+    { title: 'Engineer Data in Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/662', icon: 'fa-certificate' },
+    { title: 'Ensure Security in Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/663', icon: 'fa-certificate' },
+    { title: 'Explore Machine Learning Models with Explainable AI', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/664', icon: 'fa-certificate' },
+    { title: 'Manage Kubernetes in Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/665', icon: 'fa-certificate' },
+    { title: 'Manage PostgreSQL Databases on Cloud SQL', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/666', icon: 'fa-certificate' },
+    { title: 'Optimize Performance and Costs for Google Cloud Databases', category: 'Skill', level: 'Advanced', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/667', icon: 'fa-certificate' },
+    { title: 'Process Data with Dataproc on Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/668', icon: 'fa-certificate' },
+    { title: 'Protect Cloud Data with Cloud IAM', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/669', icon: 'fa-certificate' },
+    { title: 'Secure Networks in Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/670', icon: 'fa-certificate' },
+    { title: 'Set Up a Virtual Private Cloud (VPC) Network', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/671', icon: 'fa-certificate' },
+    { title: 'Build Looker Dashboards and Queries', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/672', icon: 'fa-certificate' },
+    { title: 'Analyze Speech and Language with Google Cloud AI APIs', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/673', icon: 'fa-certificate' },
+    { title: 'Build AI Products with Vertex AI', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/674', icon: 'fa-certificate' },
+    { title: 'Deploy Applications on Cloud Run', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/675', icon: 'fa-certificate' },
+    { title: 'Deploy Microservices on Google Kubernetes Engine', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/676', icon: 'fa-certificate' },
+    { title: 'Develop Serverless Applications with Cloud Run', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/677', icon: 'fa-certificate' },
+    { title: 'Implement Cloud Security Operations on Google Cloud', category: 'Skill', level: 'Advanced', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/678', icon: 'fa-certificate' },
+    { title: 'Manage Data Models in Looker', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/679', icon: 'fa-certificate' },
+    { title: 'Manage Machine Learning Workflows with Vertex AI', category: 'Skill', level: 'Advanced', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/681', icon: 'fa-certificate' },
+    { title: 'Store and Manage Objects in Cloud Storage', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/682', icon: 'fa-certificate' },
+    { title: 'Streamline Event-Driven Architectures with Eventarc', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/683', icon: 'fa-certificate' },
+    { title: 'Use BigQuery to Do Sequential Data Analysis', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/684', icon: 'fa-certificate' },
+    { title: 'Use BigQuery for Predictive Analytics', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/685', icon: 'fa-certificate' },
+    { title: 'Use Machine Learning APIs on Google Cloud', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/686', icon: 'fa-certificate' },
+    { title: 'Build a Secure Google Cloud Network', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/687', icon: 'fa-certificate' },
+    { title: 'Build Data Warehouses with BigQuery', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/688', icon: 'fa-certificate' },
+    { title: 'Configure Network Security for Compute Engine', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/689', icon: 'fa-certificate' },
+    { title: 'Create Data Pipelines with Dataflow', category: 'Skill', level: 'Intermediate', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/690', icon: 'fa-certificate' },
+    { title: 'Deploy Applications on Compute Engine', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/691', icon: 'fa-certificate' },
+    { title: 'Deploy Containerized Apps on Cloud Run', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/692', icon: 'fa-certificate' },
+    { title: 'Implement Automated Security Testing in CI/CD Pipelines', category: 'Skill', level: 'Advanced', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/693', icon: 'fa-certificate' },
+    { title: 'Implement Data Governance with Dataplex', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/694', icon: 'fa-certificate' },
+    { title: 'Implement Zero Trust Security with BeyondCorp', category: 'Skill', level: 'Advanced', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/695', icon: 'fa-certificate' },
+    { title: 'Manage Google Cloud Compute Engine Resources', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/696', icon: 'fa-certificate' },
+    { title: 'Manage Google Cloud Storage Buckets', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/697', icon: 'fa-certificate' },
+    { title: 'Optimize Data Architecture with Bigtable', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/698', icon: 'fa-certificate' },
+    { title: 'Secure Google Cloud Compute Instances', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/699', icon: 'fa-certificate' },
+    { title: 'Set Up Enterprise Security Policies in Google Cloud', category: 'Skill', level: 'Advanced', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/700', icon: 'fa-certificate' }
   ];
 
   let currentBadgeCategoryFilter = 'all';
   let currentSearchQuery = '';
+
+  // Helper string normalizer for 100% accurate badge title comparison
+  function normalizeBadgeTitle(str) {
+    if (!str) return '';
+    return str
+      .toLowerCase()
+      .replace(/\[deprecated\]/gi, '')
+      .replace(/skill badge/gi, '')
+      .replace(/[^a-z0-9]/gi, '');
+  }
 
   function renderIncompleteBadges(earnedTitles = []) {
     const grid = document.querySelector('#recommended-badges-grid');
@@ -690,14 +632,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const cntSkill = document.querySelector('#cnt-chip-skill');
     if (!grid) return;
 
-    // Create a set of lowercased completed badge titles
-    const completedSet = new Set((earnedTitles || []).map(t => t.toLowerCase().trim()));
+    // Convert earned titles into normalized strings set
+    const completedSet = new Set((earnedTitles || []).map(normalizeBadgeTitle));
 
-    // Dynamically filter out badges already completed by the learner
+    // Filter out badges already completed by the learner
     const incompleteBadges = MASTER_ARCADE_BADGES_CATALOG.filter(item => {
-      const itemTitleLower = item.title.toLowerCase().trim();
-      const isCompleted = Array.from(completedSet).some(earned => {
-        return earned.includes(itemTitleLower) || itemTitleLower.includes(earned);
+      const itemNorm = normalizeBadgeTitle(item.title);
+      if (!itemNorm) return true;
+      const isCompleted = Array.from(completedSet).some(earnedNorm => {
+        if (!earnedNorm || earnedNorm.length < 4) return false;
+        return earnedNorm.includes(itemNorm) || itemNorm.includes(earnedNorm);
       });
       return !isCompleted;
     });
@@ -719,7 +663,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (filtered.length === 0) {
       if (incompleteBadges.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green-accent); border-radius: var(--radius-md); color: var(--green-accent);"><i class="fa-solid fa-circle-check" style="font-size: 2rem; margin-bottom: 0.5rem;"></i><h4 style="font-size: 1.1rem; font-weight: 700;">No Incomplete Badges Remaining!</h4><p style="font-size: 0.9rem; margin-top: 0.25rem;">You have completed all active Arcade challenge badges!</p></div>';
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green-accent); border-radius: var(--radius-md); color: var(--green-accent);"><i class="fa-solid fa-circle-check" style="font-size: 2.2rem; margin-bottom: 0.5rem;"></i><h4 style="font-size: 1.15rem; font-weight: 700;">No Incomplete Badges Remaining!</h4><p style="font-size: 0.9rem; margin-top: 0.25rem;">Congratulations! You have completed all active Arcade challenge badges!</p></div>';
       } else {
         grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-dim);">No incomplete badges matching your search query.</div>';
       }
@@ -775,7 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Initial render of incomplete badges
+  // Initial render of incomplete badges (Displays all catalog items before profile is evaluated)
   renderIncompleteBadges([]);
 
   // Render Scraped Profile Data onto Dashboard UI
