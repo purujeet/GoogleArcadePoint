@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     arcadeGames: 0,
     skillBadges: 0,
     bonusPoints: 0,
-    totalPoints: 0
+    totalPoints: 0,
+    earnedBadgeTitles: []
   };
 
   // Switch View Helper
@@ -142,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Calculation Error:', err);
       alert('Could not fetch public profile data. Please check that your profile link is public and try again.');
     } finally {
-      // ALWAYS reset calculate button state so it never gets stuck on "Evaluating..."
       if (heroCalcBtn) {
         heroCalcBtn.disabled = false;
         heroCalcBtn.innerHTML = 'Calculate<br>Points';
@@ -234,12 +234,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const specialGames = [];
     const skillBadges = [];
     const completionBadges = [];
+    const allTitles = [];
 
     badgeElements.forEach((b, i) => {
       const titleEl = b.querySelector('span.ql-title-medium');
       const title = titleEl ? titleEl.textContent.trim() : '';
       if (!title) return;
 
+      allTitles.push(title);
       const lower = title.toLowerCase();
 
       if (lower.includes('special monthly') || lower.includes('special game') || lower.includes('monumental')) {
@@ -299,7 +301,8 @@ document.addEventListener('DOMContentLoaded', () => {
       completionBadges: completionBadges.length,
       arcadePoints: Math.round(arcadePoints * 10) / 10,
       bonusPoints,
-      totalPoints: Math.round(totalPoints * 10) / 10
+      totalPoints: Math.round(totalPoints * 10) / 10,
+      earnedBadgeTitles: allTitles
     };
   }
 
@@ -529,7 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // --- INCOMPLETE & RECOMMENDED CHALLENGE BADGES ENGINE ---
+  // --- DYNAMIC INCOMPLETE & RECOMMENDED CHALLENGE BADGES ENGINE ---
   const RECOMMENDED_BADGES_LIST = [
     {
       id: 'rec-1',
@@ -602,24 +605,124 @@ document.addEventListener('DOMContentLoaded', () => {
       labsOrPts: '4 Labs',
       link: 'https://www.cloudskillsboost.google/course_templates/637',
       icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-9',
+      title: 'Create and Manage Cloud Spanner Instances',
+      category: 'Skill',
+      level: 'Intermediate',
+      labsOrPts: '4 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/638',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-10',
+      title: 'Deploy Kubernetes Applications on Google Kubernetes Engine',
+      category: 'Skill',
+      level: 'Intermediate',
+      labsOrPts: '5 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/640',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-11',
+      title: 'Develop GenAI Apps with Gemini and Streamlit',
+      category: 'Skill',
+      level: 'Advanced',
+      labsOrPts: '4 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/977',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-12',
+      title: 'Build Infrastructure with Terraform on Google Cloud',
+      category: 'Skill',
+      level: 'Intermediate',
+      labsOrPts: '5 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/641',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-13',
+      title: 'Analyze Big Data with BigQuery',
+      category: 'Skill',
+      level: 'Intermediate',
+      labsOrPts: '5 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/642',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-14',
+      title: 'Monitor and Log Google Cloud Services',
+      category: 'Skill',
+      level: 'Intermediate',
+      labsOrPts: '4 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/643',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-15',
+      title: 'Optimize Costs for Google Cloud Network & Compute',
+      category: 'Skill',
+      level: 'Intermediate',
+      labsOrPts: '5 Labs',
+      link: 'https://www.cloudskillsboost.google/course_templates/644',
+      icon: 'fa-certificate'
+    },
+    {
+      id: 'rec-16',
+      title: 'Arcade Base Camp: Cloud Essentials',
+      category: 'Game',
+      level: 'Introductory',
+      labsOrPts: '1 Points',
+      link: 'https://www.cloudskillsboost.google/games/5000',
+      icon: 'fa-gamepad'
     }
   ];
 
   let currentBadgeCategoryFilter = 'all';
   let currentSearchQuery = '';
 
-  function renderRecommendedBadges() {
+  function renderRecommendedBadges(earnedTitles = []) {
     const grid = document.querySelector('#recommended-badges-grid');
+    const cntAll = document.querySelector('#cnt-chip-all');
+    const cntGame = document.querySelector('#cnt-chip-game');
+    const cntSkill = document.querySelector('#cnt-chip-skill');
     if (!grid) return;
 
-    const filtered = RECOMMENDED_BADGES_LIST.filter(item => {
+    // Create a set of lowercased completed badge titles
+    const completedSet = new Set((earnedTitles || []).map(t => t.toLowerCase().trim()));
+
+    // Dynamically filter out badges already completed by the learner
+    const incompleteBadges = RECOMMENDED_BADGES_LIST.filter(item => {
+      const itemTitleLower = item.title.toLowerCase().trim();
+      const isCompleted = Array.from(completedSet).some(earned => {
+        return earned.includes(itemTitleLower) || itemTitleLower.includes(earned);
+      });
+      return !isCompleted;
+    });
+
+    // Update Category Chips Counts dynamically
+    const gameCount = incompleteBadges.filter(b => b.category === 'Game').length;
+    const skillCount = incompleteBadges.filter(b => b.category === 'Skill').length;
+
+    if (cntAll) cntAll.textContent = incompleteBadges.length;
+    if (cntGame) cntGame.textContent = gameCount;
+    if (cntSkill) cntSkill.textContent = skillCount;
+
+    // Filter by selected Chip & Search query
+    const filtered = incompleteBadges.filter(item => {
       const matchCat = currentBadgeCategoryFilter === 'all' || item.category.toLowerCase() === currentBadgeCategoryFilter;
       const matchSearch = !currentSearchQuery || item.title.toLowerCase().includes(currentSearchQuery.toLowerCase());
       return matchCat && matchSearch;
     });
 
     if (filtered.length === 0) {
-      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-dim);">No challenge badges found matching your search.</div>';
+      if (incompleteBadges.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green-accent); border-radius: var(--radius-md); color: var(--green-accent);"><i class="fa-solid fa-trophy" style="font-size: 2rem; margin-bottom: 0.5rem;"></i><h4 style="font-size: 1.1rem; font-weight: 700;">Outstanding Work!</h4><p style="font-size: 0.9rem; margin-top: 0.25rem;">You have completed all recommended challenge badges for this season!</p></div>';
+      } else {
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-dim);">No incomplete badges matching your search query.</div>';
+      }
       return;
     }
 
@@ -662,18 +765,18 @@ document.addEventListener('DOMContentLoaded', () => {
     [chipAll, chipGame, chipSkill].forEach(c => c && c.classList.remove('active'));
     if (btn) btn.classList.add('active');
     currentBadgeCategoryFilter = cat;
-    renderRecommendedBadges();
+    renderRecommendedBadges(currentProfileData.earnedBadgeTitles || []);
   }
 
   if (searchInput) {
     searchInput.oninput = (e) => {
       currentSearchQuery = e.target.value.trim();
-      renderRecommendedBadges();
+      renderRecommendedBadges(currentProfileData.earnedBadgeTitles || []);
     };
   }
 
   // Initial render of recommended badges
-  renderRecommendedBadges();
+  renderRecommendedBadges([]);
 
   // Render Scraped Profile Data onto Dashboard UI
   function renderDashboard(data) {
@@ -694,7 +797,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gamification Engines
     updateXPLevel(data.totalPoints || 0);
     renderAchievements(data);
-    renderRecommendedBadges();
+    renderRecommendedBadges(data.earnedBadgeTitles || []);
 
     // Stats Card
     const formulaArcade = document.querySelector('#val-arcade-raw');

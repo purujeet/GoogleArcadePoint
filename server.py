@@ -168,7 +168,8 @@ class ArcadeCalcHandler(http.server.SimpleHTTPRequestHandler):
             "arcadePoints": round(arcade_points, 1),
             "bonusPoints": bonus_points,
             "totalPoints": round(total_points, 1),
-            "weeklyActivity": weekly_activity
+            "weeklyActivity": weekly_activity,
+            "earnedBadgeTitles": clean_titles
         }
 
 def run_server():
