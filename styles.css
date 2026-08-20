@@ -49,26 +49,78 @@
 }
 
 [data-theme="light"] {
-  --bg-dark: #f8fafc;
+  --bg-dark: #f1f5f9;
   --bg-surface: #ffffff;
   --bg-card: #ffffff;
-  --bg-card-hover: #f1f5f9;
-  --bg-input: #f1f5f9;
+  --bg-card-hover: #f8fafc;
+  --bg-input: #ffffff;
   --border-color: #cbd5e1;
-  --border-highlight: #94a3b8;
-  --text-main: #0f172a;
-  --text-muted: #334155;
-  --text-dim: #64748b;
-  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --glow-cyan: 0 0 10px rgba(0, 180, 216, 0.2);
-  --glow-magenta: 0 0 10px rgba(224, 30, 90, 0.2);
+  --border-highlight: #64748b;
+  
+  --text-main: #0f172a;       /* Deep high-contrast slate */
+  --text-muted: #334155;      /* Crisp charcoal slate */
+  --text-dim: #475569;        /* High-visibility medium slate */
+  
+  --green-accent: #059669;    /* Rich Emerald Green */
+  --blue-accent: #0284c7;     /* Deep Sky/Ocean Blue */
+  --amber-accent: #d97706;    /* Warm Deep Gold/Amber */
+  --google-blue: #2563eb;
+  --google-blue-dark: #1d4ed8;
+  --google-red: #dc2626;
+  --google-yellow: #d97706;
+  --google-green: #059669;
+  --google-purple: #7c3aed;
+  --google-purple-dark: #6d28d9;
+  --google-purple-light: #8b5cf6;
+  
+  --purple-gradient: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+  --shadow-card: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --glow-cyan: 0 0 10px rgba(2, 132, 199, 0.2);
+  --glow-magenta: 0 0 10px rgba(190, 18, 60, 0.2);
+}
+
+/* --- LIGHT MODE COMPONENT OVERRIDES --- */
+[data-theme="light"] .google-navbar {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+}
+
+[data-theme="light"] .google-brand {
+  color: #0f172a;
+  text-shadow: none;
+}
+
+[data-theme="light"] .nav-tab-btn {
+  color: #475569;
+}
+
+[data-theme="light"] .nav-tab-btn:hover {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+[data-theme="light"] .nav-tab-btn.active {
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  font-weight: 600;
+}
+
+[data-theme="light"] .user-name-text {
+  color: #0f172a;
+}
+
+[data-theme="light"] .avatar-circle {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
 }
 
 [data-theme="light"] .hero-wrapper {
   background-color: #f1f5f9;
   background-image: 
-    linear-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.15) 1px, transparent 1px);
+    linear-gradient(rgba(148, 163, 184, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.2) 1px, transparent 1px);
 }
 
 [data-theme="light"] .hero-header-text h1 {
@@ -78,11 +130,19 @@
   text-shadow: none;
 }
 
+[data-theme="light"] .hero-subtitle {
+  color: #475569;
+}
+
 [data-theme="light"] .hero-input-field {
   background: #ffffff;
   border-color: #cbd5e1;
   color: #0f172a;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+}
+
+[data-theme="light"] .hero-input-field::placeholder {
+  color: #94a3b8;
 }
 
 [data-theme="light"] .hero-input-field:focus {
@@ -93,18 +153,231 @@
 [data-theme="light"] .dash-card {
   background: #ffffff;
   border-color: #e2e8f0;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
 }
 
 [data-theme="light"] .dash-card:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.1);
 }
 
-[data-theme="light"] .google-navbar {
-  background: rgba(255, 255, 255, 0.9);
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+[data-theme="light"] .card-title {
+  color: #0f172a;
+  text-shadow: none;
+}
+
+[data-theme="light"] .user-profile-card h3 {
+  color: #0f172a;
+}
+
+[data-theme="light"] .user-handle-sub {
+  color: #475569;
+}
+
+[data-theme="light"] .user-level-badge {
+  background: rgba(217, 119, 6, 0.12);
+  color: #b45309;
+  border-color: rgba(217, 119, 6, 0.3);
+  font-weight: 600;
+}
+
+[data-theme="light"] .stat-val-large {
+  color: #0f172a;
+  text-shadow: none;
+}
+
+[data-theme="light"] .stat-sub {
+  color: #475569;
+}
+
+[data-theme="light"] .formula-box {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+[data-theme="light"] .formula-text span {
+  color: #0f172a;
+}
+
+[data-theme="light"] .bonus-banner {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(124, 58, 237, 0.08) 100%);
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .bonus-tag {
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.12);
+}
+
+[data-theme="light"] .bonus-amount {
+  color: #0f172a;
+  text-shadow: none;
+}
+
+[data-theme="light"] .bonus-sub {
+  color: #475569;
+}
+
+[data-theme="light"] .node-label {
+  color: #334155;
+}
+
+[data-theme="light"] .step-node.completed .node-label {
+  color: #059669;
+  font-weight: 600;
+}
+
+[data-theme="light"] .step-node.active-selected .node-label {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+[data-theme="light"] .node-pts {
+  color: #0284c7;
+}
+
+[data-theme="light"] .node-status {
+  color: #64748b;
+}
+
+[data-theme="light"] .requirements-box {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .req-title span {
+  color: #0f172a;
+}
+
+[data-theme="light"] .req-bar-labels {
+  color: #334155;
+  font-weight: 500;
+}
+
+[data-theme="light"] .bar-track {
+  background: #e2e8f0;
+}
+
+[data-theme="light"] .achievement-card.locked {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .achievement-card.locked .achievement-title {
+  color: #475569;
+}
+
+[data-theme="light"] .achievement-card.locked .achievement-desc {
+  color: #64748b;
+}
+
+[data-theme="light"] .achievement-card.unlocked {
+  background: rgba(5, 150, 105, 0.08);
+  border-color: #059669;
+}
+
+[data-theme="light"] .achievement-card.unlocked .achievement-title {
+  color: #065f46;
+  font-weight: 700;
+}
+
+[data-theme="light"] .achievement-card.unlocked .achievement-desc {
+  color: #047857;
+}
+
+[data-theme="light"] .tier-name {
+  color: #334155;
+}
+
+[data-theme="light"] .tier-req {
+  color: #0284c7;
+}
+
+[data-theme="light"] .tier-sub-status {
+  color: #64748b;
+}
+
+[data-theme="light"] .tier-node.completed .tier-name {
+  color: #059669;
+  font-weight: 600;
+}
+
+[data-theme="light"] .filter-chip {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+[data-theme="light"] .filter-chip.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+[data-theme="light"] .badge-search-box input {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+[data-theme="light"] .challenge-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+[data-theme="light"] .challenge-card:hover {
+  border-color: #2563eb;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.12);
+}
+
+[data-theme="light"] .challenge-title {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+[data-theme="light"] .challenge-level-pill {
+  background: #f1f5f9;
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .challenge-meta-row {
+  color: #475569;
+}
+
+[data-theme="light"] .start-challenge-btn {
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+[data-theme="light"] .start-challenge-btn:hover {
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+[data-theme="light"] table {
+  color: #0f172a;
+}
+
+[data-theme="light"] th {
+  background: #f8fafc;
+  color: #334155;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] td {
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+[data-theme="light"] .help-modal-content {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
 }
 
 *, *::before, *::after {
