@@ -63,6 +63,9 @@ class ArcadeCalcHandler(http.server.SimpleHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        self.send_header("Pragma", "no-cache")
+        self.send_header("Expires", "0")
         self.send_header("Content-Length", str(len(content)))
         self.end_headers()
         self.wfile.write(content)
@@ -74,7 +77,9 @@ class ArcadeCalcHandler(http.server.SimpleHTTPRequestHandler):
         headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept-Language': 'en-US,en;q=0.9',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
         }
 
         req = urllib.request.Request(target_url, headers=headers)
@@ -120,9 +125,9 @@ class ArcadeCalcHandler(http.server.SimpleHTTPRequestHandler):
         for i, title in enumerate(clean_titles):
             lower = title.lower()
 
-            if 'special monthly' in lower or 'special game' in lower or 'monumental' in lower:
+            if 'special monthly' in lower or 'special game' in lower or 'monumental' in lower or 'use agent skills' in lower:
                 special_games.append(title)
-            elif any(k in lower for k in ['arcade base camp', 'level 1', 'level 2', 'level 3', 'arcade voyage', 'arcade adventure', 'arcade simulator', 'arcade trail', 'arcade game', 'base camp']):
+            elif any(k in lower for k in ['arcade base camp', 'level 1', 'level 2', 'level 3', 'arcade voyage', 'arcade adventure', 'arcade simulator', 'arcade trail', 'arcade re-trail', 'arcade game', 'base camp']):
                 arcade_games.append(title)
             elif 'trivia' in lower or 'spans and plans' in lower or 'weekly challenge' in lower:
                 trivia_badges.append(title)

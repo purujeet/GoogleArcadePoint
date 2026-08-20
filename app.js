@@ -133,7 +133,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const isLocalEnvironment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       if (isLocalEnvironment) {
         try {
-          const response = await fetch('/api/calculate?url=' + encodeURIComponent(url));
+          const cacheBustUrl = '/api/calculate?url=' + encodeURIComponent(url) + '&_t=' + Date.now();
+          const response = await fetch(cacheBustUrl, {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+          });
           if (response.ok) {
             const data = await response.json();
             if (data && data.success) {
@@ -167,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Helper fetch with timeout
+  // Helper fetch with timeout and cache-busting
   async function fetchWithTimeout(resource, options = {}) {
     const { timeout = 6000 } = options;
     const controller = new AbortController();
@@ -175,6 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await fetch(resource, {
         ...options,
+        cache: 'no-store',
         signal: controller.signal
       });
       clearTimeout(id);
@@ -192,11 +197,14 @@ document.addEventListener('DOMContentLoaded', () => {
       cleanUrl = 'https://' + cleanUrl;
     }
 
+    // Append cache-busting timestamp to target URL
+    const cacheBustTarget = cleanUrl + (cleanUrl.includes('?') ? '&' : '?') + '_t=' + Date.now();
+
     let html = null;
 
     // Proxy Strategy 1: corsproxy.io
     try {
-      const res = await fetchWithTimeout(`https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`, { timeout: 6000 });
+      const res = await fetchWithTimeout(`https://corsproxy.io/?${encodeURIComponent(cacheBustTarget)}`, { timeout: 6000 });
       if (res.ok) {
         const text = await res.text();
         if (text && text.includes('profile-badge')) html = text;
@@ -206,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Proxy Strategy 2: AllOrigins JSON API
     if (!html) {
       try {
-        const res = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(cleanUrl)}`, { timeout: 6000 });
+        const res = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(cacheBustTarget)}`, { timeout: 6000 });
         if (res.ok) {
           const json = await res.json();
           if (json && json.contents && json.contents.includes('profile-badge')) {
@@ -219,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Proxy Strategy 3: CodeTabs Proxy
     if (!html) {
       try {
-        const res = await fetchWithTimeout(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(cleanUrl)}`, { timeout: 6000 });
+        const res = await fetchWithTimeout(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(cacheBustTarget)}`, { timeout: 6000 });
         if (res.ok) {
           const text = await res.text();
           if (text && text.includes('profile-badge')) html = text;
@@ -262,9 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
       allTitles.push(title);
       const lower = title.toLowerCase();
 
-      if (lower.includes('special monthly') || lower.includes('special game') || lower.includes('monumental')) {
+      if (lower.includes('special monthly') || lower.includes('special game') || lower.includes('monumental') || lower.includes('use agent skills')) {
         specialGames.push(title);
-      } else if (['arcade base camp', 'level 1', 'level 2', 'level 3', 'arcade voyage', 'arcade adventure', 'arcade simulator', 'arcade trail', 'arcade game', 'base camp'].some(k => lower.includes(k))) {
+      } else if (['arcade base camp', 'level 1', 'level 2', 'level 3', 'arcade voyage', 'arcade adventure', 'arcade simulator', 'arcade trail', 'arcade re-trail', 'arcade game', 'base camp'].some(k => lower.includes(k))) {
         arcadeGames.push(title);
       } else if (lower.includes('trivia') || lower.includes('spans and plans') || lower.includes('weekly challenge')) {
         triviaBadges.push(title);
@@ -864,7 +872,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (statTotalBadges) statTotalBadges.textContent = `${data.totalBadges || 0} Badges`;
 
     // --- 1. DYNAMIC FACILITATOR MILESTONE EVALUATION ---
-    const games = data.arcadeGames || 0;
+    const games = (data.arcadeGames || 0) + (data.triviaBadges || 0) + (data.specialGames || 0);
     const skills = data.skillBadges || 0;
 
     const hasM1 = games >= 6 && skills >= 18;
