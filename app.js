@@ -7,18 +7,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Navigation & Views
   const tabHome = document.querySelector('#tab-home');
   const tabDashboard = document.querySelector('#tab-dashboard');
-  const tabLeaderboard = document.querySelector('#tab-leaderboard');
+  const tabSwag = document.querySelector('#tab-swag');
   const brandLink = document.querySelector('#brand-home-link');
 
   const viewHome = document.querySelector('#view-home');
   const viewDashboard = document.querySelector('#view-dashboard');
-  const viewLeaderboard = document.querySelector('#view-leaderboard');
+  const viewSwag = document.querySelector('#view-swag');
 
   // Form & Inputs
   const heroForm = document.querySelector('#hero-calc-form');
   const profileUrlInput = document.querySelector('#profile-url-input');
   const heroCalcBtn = document.querySelector('#hero-calc-btn');
-  const demoProfileBtn = document.querySelector('#demo-profile-btn');
 
   // Help Modal
   const helpTrigger = document.querySelector('#help-modal-trigger');
@@ -39,11 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function switchView(viewName) {
     if (viewHome) viewHome.classList.add('hidden');
     if (viewDashboard) viewDashboard.classList.add('hidden');
-    if (viewLeaderboard) viewLeaderboard.classList.add('hidden');
+    if (viewSwag) viewSwag.classList.add('hidden');
 
     if (tabHome) tabHome.classList.remove('active');
     if (tabDashboard) tabDashboard.classList.remove('active');
-    if (tabLeaderboard) tabLeaderboard.classList.remove('active');
+    if (tabSwag) tabSwag.classList.remove('active');
 
     if (viewName === 'home') {
       if (viewHome) viewHome.classList.remove('hidden');
@@ -51,28 +50,16 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (viewName === 'dashboard') {
       if (viewDashboard) viewDashboard.classList.remove('hidden');
       if (tabDashboard) tabDashboard.classList.add('active');
-    } else if (viewName === 'leaderboard') {
-      if (viewLeaderboard) viewLeaderboard.classList.remove('hidden');
-      if (tabLeaderboard) tabLeaderboard.classList.add('active');
-      renderLeaderboard();
+    } else if (viewName === 'swag') {
+      if (viewSwag) viewSwag.classList.remove('hidden');
+      if (tabSwag) tabSwag.classList.add('active');
     }
   }
 
   if (tabHome) tabHome.addEventListener('click', () => switchView('home'));
   if (tabDashboard) tabDashboard.addEventListener('click', () => switchView('dashboard'));
-  if (tabLeaderboard) tabLeaderboard.addEventListener('click', () => switchView('leaderboard'));
+  if (tabSwag) tabSwag.addEventListener('click', () => switchView('swag'));
   if (brandLink) brandLink.addEventListener('click', (e) => { e.preventDefault(); switchView('home'); });
-
-  // Preset Demo Profile Handler
-  if (demoProfileBtn) {
-    demoProfileBtn.addEventListener('click', () => {
-      const demoUrl = demoProfileBtn.getAttribute('data-url');
-      if (demoUrl && profileUrlInput) {
-        profileUrlInput.value = demoUrl;
-        processCalculation(demoUrl);
-      }
-    });
-  }
 
   // Theme Toggle
   if (themeToggleBtn) {
@@ -577,64 +564,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (rowTriviaPts) rowTriviaPts.textContent = `${((data.triviaBadges || 0) * 1.0).toFixed(1)} Pts`;
     if (rowCompletionCount) rowCompletionCount.textContent = data.completionBadges || 0;
     if (rowBonusPts) rowBonusPts.textContent = `+${data.bonusPoints || 0}.0 Pts`;
-  }
-
-  // --- LEADERBOARD COMPONENT & RENDERER ---
-  const MOCK_LEADERBOARD = [
-    { rank: 1, name: 'purujeet singhal', skills: 94, games: 10, bonus: 35, totalPts: 93.0, tier: 'Ranger 🚀' },
-    { rank: 2, name: 'Ananya Sharma', skills: 72, games: 10, bonus: 35, totalPts: 82.0, tier: 'Ranger 🚀' },
-    { rank: 3, name: 'Vikramaditya Rao', skills: 68, games: 8, bonus: 25, totalPts: 67.0, tier: 'Trooper 📦' },
-    { rank: 4, name: 'Priya Patel', skills: 54, games: 8, bonus: 25, totalPts: 60.0, tier: 'Trooper 📦' },
-    { rank: 5, name: 'Rohan Mehta', skills: 48, games: 6, bonus: 15, totalPts: 45.0, tier: 'Explorer 🔍' },
-    { rank: 6, name: 'Sneha Kulkarni', skills: 36, games: 6, bonus: 15, totalPts: 39.0, tier: 'Explorer 🔍' },
-    { rank: 7, name: 'Aarav Gupta', skills: 28, games: 4, bonus: 5, totalPts: 24.0, tier: 'Explorer 🔍' },
-    { rank: 8, name: 'Divya Nair', skills: 20, games: 4, bonus: 5, totalPts: 20.0, tier: 'Explorer 🔍' }
-  ];
-
-  function renderLeaderboard(filterQuery = '') {
-    const tbody = document.querySelector('#leaderboard-table-body');
-    if (!tbody) return;
-
-    const query = filterQuery.toLowerCase().trim();
-    const filtered = MOCK_LEADERBOARD.filter(item => item.name.toLowerCase().includes(query));
-
-    if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-dim);">No participants found matching "${filterQuery}"</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = filtered.map(item => {
-      let rankBadge = `#${item.rank}`;
-      if (item.rank === 1) rankBadge = '🥇 #1';
-      else if (item.rank === 2) rankBadge = '🥈 #2';
-      else if (item.rank === 3) rankBadge = '🥉 #3';
-
-      const initial = item.name[0].toUpperCase();
-      return `
-        <tr>
-          <td><strong style="color: ${item.rank <= 3 ? 'var(--amber-accent)' : 'var(--text-main)'};">${rankBadge}</strong></td>
-          <td>
-            <div class="badge-cat-cell">
-              <div class="google-avatar" style="width: 32px; height: 32px; font-size: 0.85rem; background: var(--google-blue-dark);">${initial}</div>
-              <strong style="color: var(--text-main);">${item.name}</strong>
-            </div>
-          </td>
-          <td>${item.skills} Badges</td>
-          <td>${item.games} Games</td>
-          <td style="color: var(--green-accent); font-weight: 600;">+${item.bonus} Pts</td>
-          <td class="pts-highlight">${item.totalPts.toFixed(1)} Pts</td>
-          <td><span class="season-badge-tag">${item.tier}</span></td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  // Leaderboard Search Filter Event Listener
-  const searchInput = document.querySelector('#leaderboard-search');
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      renderLeaderboard(e.target.value);
-    });
   }
 
   // Hero Form Submit Event

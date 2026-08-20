@@ -36,7 +36,7 @@
         <ul class="google-nav-tabs">
           <li><button type="button" class="nav-tab-btn active" id="tab-home">Home</button></li>
           <li><button type="button" class="nav-tab-btn" id="tab-dashboard">Dashboard</button></li>
-          <li><button type="button" class="nav-tab-btn" id="tab-leaderboard">Leaderboard</button></li>
+          <li><button type="button" class="nav-tab-btn" id="tab-swag">Swags</button></li>
         </ul>
       </nav>
 
@@ -75,13 +75,6 @@
             Calculate<br>Points
           </button>
         </form>
-
-        <div class="preset-chips-row">
-          <span style="color: var(--text-dim); font-size: 0.85rem; font-weight: 500;">Quick Demo:</span>
-          <button type="button" class="preset-chip-btn" id="demo-profile-btn" data-url="https://www.skills.google/public_profiles/907d1ea5-38d8-4376-8954-11b0a4b10015">
-            <i class="fa-solid fa-user-check"></i> Try Sample Profile (113 Badges)
-          </button>
-        </div>
 
         <div class="hero-help-row">
           <span class="help-icon-red">?</span>
@@ -231,6 +224,7 @@
                     <div class="node-circle"><i class="fa-solid fa-check"></i></div>
                     <span class="node-label">Start</span>
                     <span class="node-pts">0 pts</span>
+                    <span class="node-status" style="visibility: hidden;">Base</span>
                   </div>
 
                   <div class="step-node interactive-node" id="node-m1" data-milestone="m1" role="button" tabindex="0">
@@ -434,56 +428,60 @@
     </div>
 
     <!-- ===================================================================
-         LEADERBOARD VIEW
+         SWAG REWARDS VIEW (Coming Soon)
          =================================================================== -->
-    <div id="view-leaderboard" class="page-view hidden">
+    <div id="view-swag" class="page-view hidden">
       <section class="dashboard-section">
         <div class="container">
           
-          <div style="text-align: center; margin-bottom: 2rem;">
-            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main);">
-              <i class="fa-solid fa-trophy" style="color: var(--amber-accent);"></i> Google Cloud Arcade Global Leaderboard
-            </h2>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">Real-time ranking of top Google Cloud Arcade learners & Facilitator participants</p>
-          </div>
+          <div style="max-width: 800px; margin: 2rem auto; text-align: center;">
+            <article class="dash-card" style="padding: 3.5rem 2rem; background: linear-gradient(135deg, rgba(30, 41, 69, 0.7), rgba(15, 23, 42, 0.9)); border: 1px solid var(--border-highlight); border-radius: var(--radius-md); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+              
+              <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem auto; background: rgba(244, 63, 94, 0.15); border: 2px solid #f43f5e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #f43f5e; box-shadow: 0 0 25px rgba(244, 63, 94, 0.4);">
+                <i class="fa-solid fa-gift"></i>
+              </div>
 
-          <!-- Leaderboard Search & Stats Row -->
-          <div style="display: flex; gap: 1rem; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap;">
-            <div style="position: relative; max-width: 400px; width: 100%;">
-              <input 
-                type="text" 
-                id="leaderboard-search" 
-                placeholder="Search participant by name..." 
-                style="width: 100%; padding: 0.65rem 1rem 0.65rem 2.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-main); font-size: 0.9rem;"
-              />
-              <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-dim);"></i>
-            </div>
-            
-            <div style="display: flex; gap: 1rem;">
-              <span class="season-badge-tag">🏆 4,280 Active Learners</span>
-              <span class="season-badge-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--green-accent);">⚡ Live Sync Active</span>
-            </div>
-          </div>
+              <span class="season-badge-tag" style="background: rgba(245, 158, 11, 0.2); color: var(--amber-accent); font-size: 0.85rem; padding: 0.4rem 1rem; margin-bottom: 1rem; display: inline-block;">
+                ⚡ Official Arcade Swag Redemptions
+              </span>
 
-          <!-- Leaderboard Table Card -->
-          <article class="dash-card">
-            <table class="badge-table">
-              <thead>
-                <tr>
-                  <th style="width: 80px;">Rank</th>
-                  <th>Participant</th>
-                  <th>Skill Badges</th>
-                  <th>Arcade Games</th>
-                  <th>Facilitator Bonus</th>
-                  <th>Total Points</th>
-                  <th>Swag Tier</th>
-                </tr>
-              </thead>
-              <tbody id="leaderboard-table-body">
-                <!-- Populated dynamically via app.js -->
-              </tbody>
-            </table>
-          </article>
+              <h2 style="font-size: 2.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">
+                Swag Rewards Store — Coming Soon!
+              </h2>
+
+              <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 580px; margin: 0 auto 2rem auto; line-height: 1.6;">
+                We're building an interactive Swag Box tracker for Google Cloud Arcade Trooper, Ranger, Champion, and Legend milestone rewards. Stay tuned for real-time claim updates!
+              </p>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; max-width: 650px; margin: 0 auto 2.5rem auto;">
+                <div style="background: var(--bg-input); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                  <i class="fa-solid fa-box-open" style="font-size: 1.5rem; color: var(--google-blue-dark); margin-bottom: 0.4rem;"></i>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--text-main);">Trooper Box</h4>
+                  <p style="font-size: 0.75rem; color: var(--text-dim);">50 Points Tier</p>
+                </div>
+                <div style="background: var(--bg-input); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                  <i class="fa-solid fa-shirt" style="font-size: 1.5rem; color: var(--green-accent); margin-bottom: 0.4rem;"></i>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--text-main);">Ranger Pack</h4>
+                  <p style="font-size: 0.75rem; color: var(--text-dim);">75 Points Tier</p>
+                </div>
+                <div style="background: var(--bg-input); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                  <i class="fa-solid fa-award" style="font-size: 1.5rem; color: var(--amber-accent); margin-bottom: 0.4rem;"></i>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--text-main);">Champion Kit</h4>
+                  <p style="font-size: 0.75rem; color: var(--text-dim);">95 Points Tier</p>
+                </div>
+                <div style="background: var(--bg-input); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                  <i class="fa-solid fa-crown" style="font-size: 1.5rem; color: var(--google-purple-light); margin-bottom: 0.4rem;"></i>
+                  <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--text-main);">Legend Bundle</h4>
+                  <p style="font-size: 0.75rem; color: var(--text-dim);">120 Points Tier</p>
+                </div>
+              </div>
+
+              <button type="button" onclick="document.querySelector('#tab-dashboard').click()" style="background: var(--google-purple-light); color: white; border: none; padding: 0.75rem 1.75rem; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: opacity 0.2s ease;">
+                <i class="fa-solid fa-gauge-high"></i> Back to Dashboard
+              </button>
+
+            </article>
+          </div>
 
         </div>
       </section>
