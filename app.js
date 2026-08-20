@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentProfileData = {
     arcadeGames: 0,
     skillBadges: 0,
-    bonusPoints: 0
+    bonusPoints: 0,
+    totalPoints: 0
   };
 
   // Switch View Helper
@@ -399,6 +400,116 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // --- GAMIFIED XP LEVEL & ACHIEVEMENTS ENGINE ---
+  function updateXPLevel(totalPts) {
+    const levelTitleEl = document.querySelector('#user-level-title');
+    const xpCounterEl = document.querySelector('#xp-counter-text');
+    const xpFillBar = document.querySelector('#xp-fill-bar');
+
+    let levelName = 'Level 1: Arcade Rookie 🎯';
+    let targetPts = 30;
+    let basePts = 0;
+
+    if (totalPts >= 120) {
+      levelName = 'Level 6: Google Cloud Legend 👑';
+      basePts = 120;
+      targetPts = 150;
+    } else if (totalPts >= 95) {
+      levelName = 'Level 5: Arcade Champion 🏆';
+      basePts = 95;
+      targetPts = 120;
+    } else if (totalPts >= 75) {
+      levelName = 'Level 4: Ranger Master 🚀';
+      basePts = 75;
+      targetPts = 95;
+    } else if (totalPts >= 50) {
+      levelName = 'Level 3: Arcade Trooper 📦';
+      basePts = 50;
+      targetPts = 75;
+    } else if (totalPts >= 25) {
+      levelName = 'Level 2: Cloud Explorer 🔍';
+      basePts = 25;
+      targetPts = 50;
+    }
+
+    const currentXP = (totalPts - basePts).toFixed(1);
+    const neededXP = (targetPts - basePts).toFixed(0);
+    const xpPct = Math.min(((totalPts - basePts) / (targetPts - basePts)) * 100, 100);
+
+    if (levelTitleEl) levelTitleEl.innerHTML = `<i class="fa-solid fa-bolt" style="color: var(--amber-accent);"></i> ${levelName}`;
+    if (xpCounterEl) xpCounterEl.textContent = `${totalPts.toFixed(1)} / ${targetPts} XP`;
+    if (xpFillBar) xpFillBar.style.width = `${Math.max(xpPct, 5)}%`;
+  }
+
+  function renderAchievements(data) {
+    const container = document.querySelector('#achievements-container');
+    const counterTag = document.querySelector('#achieve-counter-tag');
+    if (!container) return;
+
+    const games = data.arcadeGames || 0;
+    const skills = data.skillBadges || 0;
+    const trivia = data.triviaBadges || 0;
+    const totalPts = data.totalPoints || 0;
+
+    const list = [
+      {
+        id: 'first-step',
+        icon: '🎯',
+        title: 'Arcade Explorer',
+        desc: 'Scraped and evaluated your public profile',
+        isUnlocked: data.totalBadges > 0
+      },
+      {
+        id: 'skill-hunter',
+        icon: '⚡',
+        title: 'Skill Badge Collector',
+        desc: 'Earned 10+ completed Skill Badges',
+        isUnlocked: skills >= 10
+      },
+      {
+        id: 'game-master',
+        icon: '🎮',
+        title: 'Game Master',
+        desc: 'Completed 5+ Arcade Game Badges',
+        isUnlocked: games >= 5
+      },
+      {
+        id: 'trivia-wizard',
+        icon: '🧠',
+        title: 'Trivia Wizard',
+        desc: 'Earned at least 1 Arcade Trivia Badge',
+        isUnlocked: trivia >= 1
+      },
+      {
+        id: 'facilitator-hero',
+        icon: '🌟',
+        title: 'Facilitator Hero',
+        desc: 'Unlocked Milestone 1+ (+5 Bonus Points)',
+        isUnlocked: games >= 4 && skills >= 14
+      },
+      {
+        id: 'ultimate-legend',
+        icon: '👑',
+        title: 'Ultimate Champion',
+        desc: 'Achieved Ultimate Milestone (10 Games & 66 Skills)',
+        isUnlocked: games >= 10 && skills >= 66
+      }
+    ];
+
+    const unlockedCount = list.filter(item => item.isUnlocked).length;
+    if (counterTag) counterTag.textContent = `${unlockedCount} / ${list.length} Unlocked`;
+
+    container.innerHTML = list.map(item => `
+      <div class="achievement-card ${item.isUnlocked ? 'unlocked' : 'locked'}">
+        <div class="achievement-icon">${item.icon}</div>
+        <div class="achievement-info">
+          <span class="achievement-title">${item.title}</span>
+          <span class="achievement-desc">${item.desc}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
   // Render Scraped Profile Data onto Dashboard UI
   function renderDashboard(data) {
     currentProfileData = data;
@@ -414,6 +525,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (avatarEl) avatarEl.textContent = initial;
     if (navAvatarEl) navAvatarEl.textContent = initial;
     if (nameEl) nameEl.textContent = name;
+
+    // Gamification Engines
+    updateXPLevel(data.totalPoints || 0);
+    renderAchievements(data);
 
     // Stats Card
     const formulaArcade = document.querySelector('#val-arcade-raw');

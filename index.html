@@ -14,6 +14,9 @@
   <!-- FontAwesome Icons CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%230f172a' stroke='%238b5cf6' stroke-width='4'/><path d='M30 42h40a12 12 0 0 1 12 12v6a12 12 0 0 1-12 12H30A12 12 0 0 1 18 60v-6a12 12 0 0 1 12-12z' fill='%231e293b' stroke='%2338bdf8' stroke-width='3'/><path d='M32 54h8M36 50v8' stroke='%2334d399' stroke-width='4' stroke-linecap='round'/><circle cx='62' cy='52' r='3.5' fill='%23ea4335'/><circle cx='70' cy='58' r='3.5' fill='%23fbbc04'/><circle cx='56' cy='58' r='3.5' fill='%234285f4'/><circle cx='64' cy='64' r='3.5' fill='%2334a853'/></svg>">
+
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -136,11 +139,23 @@
                   <div class="user-avatar-large" id="avatar-initial">G</div>
                   <div class="user-meta">
                     <h2 id="user-name-title">Google Cloud Learner</h2>
-                    <p>Member since 2024</p>
+                    <p id="user-level-title"><i class="fa-solid fa-bolt" style="color: var(--amber-accent);"></i> Level 1: Arcade Rookie</p>
                   </div>
                 </div>
+
+                <!-- Gamified XP Progress Bar -->
+                <div style="margin-top: 1rem; background: rgba(0,0,0,0.25); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1);">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.35rem; color: rgba(255,255,255,0.9);">
+                    <span><i class="fa-solid fa-gamepad"></i> Arcade XP Level</span>
+                    <span id="xp-counter-text">0.0 / 50 XP</span>
+                  </div>
+                  <div class="bar-track" style="height: 6px; background: rgba(255,255,255,0.15);">
+                    <div class="bar-fill-green" id="xp-fill-bar" style="width: 0%; background: linear-gradient(90deg, #38bdf8, #34d399);"></div>
+                  </div>
+                </div>
+
                 <div class="league-badge" id="league-badge-container">
-                  <i class="fa-solid fa-award"></i> <span id="league-name-text">Arcade Participant</span>
+                  <i class="fa-solid fa-award"></i> <span id="league-name-text">Arcade Participant League</span>
                 </div>
               </article>
 
@@ -286,7 +301,21 @@
                         <div class="bar-fill-green" id="bar-fill-skills" style="width: 0%;"></div>
                       </div>
                     </div>
+                </div>
+              </article>
+
+              <!-- Gamified Achievements & Power-Ups Card -->
+              <article class="dash-card">
+                <div class="card-title-row">
+                  <div>
+                    <span class="card-title"><i class="fa-solid fa-medal" style="color: var(--amber-accent);"></i> Arcade Achievement Unlocks</span>
+                    <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.2rem;">Earn achievement trophies as you level up your Google Cloud profile</p>
                   </div>
+                  <span class="season-badge-tag" id="achieve-counter-tag">0 / 6 Unlocked</span>
+                </div>
+
+                <div class="achievements-grid" id="achievements-container">
+                  <!-- Dynamically populated via app.js -->
                 </div>
               </article>
             </div>
