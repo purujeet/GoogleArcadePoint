@@ -462,10 +462,16 @@
                   <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
                     <!-- Filter Chips -->
                     <div class="badge-filter-chips">
-                      <button type="button" class="filter-chip active" id="chip-filter-all">All <span id="cnt-chip-all">8</span></button>
-                      <button type="button" class="filter-chip" id="chip-filter-game">Game <span id="cnt-chip-game">1</span></button>
-                      <button type="button" class="filter-chip" id="chip-filter-skill">Skill <span id="cnt-chip-skill">7</span></button>
+                      <button type="button" class="filter-chip active" id="chip-filter-all">All <span id="cnt-chip-all">0</span></button>
+                      <button type="button" class="filter-chip" id="chip-filter-game">Game <span id="cnt-chip-game">0</span></button>
+                      <button type="button" class="filter-chip" id="chip-filter-skill">Skill <span id="cnt-chip-skill">0</span></button>
                     </div>
+
+                    <!-- Ended Games Toggle -->
+                    <label class="ended-games-toggle" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-main); cursor: pointer; user-select: none; padding: 0.4rem 0.75rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                      <input type="checkbox" id="toggle-hide-ended" checked style="accent-color: var(--blue-accent); cursor: pointer;">
+                      <span><i class="fa-solid fa-calendar-xmark" style="color: var(--amber-accent);"></i> Hide Ended Games</span>
+                    </label>
 
                     <!-- Search Input Box -->
                     <div class="badge-search-box">

@@ -90,6 +90,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // HTML Entity Decoder Helper
+  function htmlUnescape(str) {
+    if (!str) return '';
+    return str
+      .replace(/&amp;/g, '&')
+      .replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+  }
+
   // Non-Skill Completion Badges Excluded List
   const EXCLUDED_COMPLETION_BADGES = [
     'safe spaces',
@@ -238,9 +249,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     badgeElements.forEach((b, i) => {
       const titleEl = b.querySelector('span.ql-title-medium');
-      const title = titleEl ? titleEl.textContent.trim() : '';
-      if (!title) return;
+      const rawTitle = titleEl ? titleEl.textContent.trim() : '';
+      if (!rawTitle) return;
 
+      const title = htmlUnescape(rawTitle);
       allTitles.push(title);
       const lower = title.toLowerCase();
 
@@ -532,15 +544,15 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // --- DYNAMIC INCOMPLETE BADGES ENGINE WITH MASTER CATALOG ---
+  // --- DYNAMIC INCOMPLETE BADGES ENGINE WITH MASTER CATALOG & FUZZY TOKEN MATCHER ---
   const MASTER_ARCADE_BADGES_CATALOG = [
-    // --- GAME BADGES ---
-    { title: 'Arcade Base Camp: Cloud Essentials', category: 'Game', level: 'Introductory', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5000', icon: 'fa-gamepad' },
-    { title: 'Level 1: Core Infrastructure and Security', category: 'Game', level: 'Intermediate', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5225', icon: 'fa-gamepad' },
-    { title: 'Level 2: Modern Application Deployment', category: 'Game', level: 'Intermediate', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5226', icon: 'fa-gamepad' },
-    { title: 'Level 3: Advanced App Operations', category: 'Game', level: 'Advanced', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5227', icon: 'fa-gamepad' },
+    // --- GAME BADGES (Marked with isEnded flag for past seasons/ended games) ---
+    { title: 'Arcade Base Camp: Cloud Essentials', category: 'Game', level: 'Introductory', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5000', icon: 'fa-gamepad', isEnded: true },
+    { title: 'Level 1: Core Infrastructure and Security', category: 'Game', level: 'Intermediate', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5225', icon: 'fa-gamepad', isEnded: true },
+    { title: 'Level 2: Modern Application Deployment', category: 'Game', level: 'Intermediate', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5226', icon: 'fa-gamepad', isEnded: true },
+    { title: 'Level 3: Advanced App Operations', category: 'Game', level: 'Advanced', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5227', icon: 'fa-gamepad', isEnded: true },
 
-    // --- SKILL BADGES ---
+    // --- ACTIVE SKILL BADGES ---
     { title: 'Perform Foundational Infrastructure Tasks in Google Cloud', category: 'Skill', level: 'Introductory', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/639', icon: 'fa-certificate' },
     { title: 'Set Up an App Dev Environment in Google Cloud', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/637', icon: 'fa-certificate' },
     { title: 'Implement DevOps Workflows in Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/341', icon: 'fa-certificate' },
@@ -615,14 +627,54 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentBadgeCategoryFilter = 'all';
   let currentSearchQuery = '';
 
-  // Helper string normalizer for 100% accurate badge title comparison
-  function normalizeBadgeTitle(str) {
-    if (!str) return '';
-    return str
-      .toLowerCase()
-      .replace(/\[deprecated\]/gi, '')
-      .replace(/skill badge/gi, '')
-      .replace(/[^a-z0-9]/gi, '');
+  // Extract set of significant keyword tokens for fuzzy matching
+  function getBadgeTokens(str) {
+    if (!str) return new Set();
+    const clean = htmlUnescape(str).toLowerCase()
+      .replace(/\[deprecated\]/g, '')
+      .replace(/skill badge/g, '');
+
+    const words = clean.match(/[a-z0-9]{3,}/g) || [];
+    const stopWords = new Set(['google', 'cloud', 'with', 'and', 'for', 'the', 'into', 'using']);
+    return new Set(words.filter(w => !stopWords.has(w)));
+  }
+
+  // Robust Fuzzy & Token-based Badge Completion Matcher
+  function isBadgeCompleted(catalogTitle, earnedTitles) {
+    if (!earnedTitles || earnedTitles.length === 0) return false;
+
+    const catTokens = getBadgeTokens(catalogTitle);
+    if (catTokens.size === 0) return false;
+
+    const catNorm = htmlUnescape(catalogTitle).toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    for (let i = 0; i < earnedTitles.length; i++) {
+      const earnedRaw = earnedTitles[i];
+      if (!earnedRaw) continue;
+
+      const earnedNorm = htmlUnescape(earnedRaw).toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      // 1. Direct or Substring match
+      if (earnedNorm.includes(catNorm) || catNorm.includes(earnedNorm)) {
+        return true;
+      }
+
+      // 2. Token overlap similarity match (60%+ keyword match threshold)
+      const earnedTokens = getBadgeTokens(earnedRaw);
+      if (earnedTokens.size > 0) {
+        let intersectionCount = 0;
+        catTokens.forEach(t => {
+          if (earnedTokens.has(t)) intersectionCount++;
+        });
+
+        const overlapRatio = intersectionCount / catTokens.size;
+        if (overlapRatio >= 0.6) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   function renderIncompleteBadges(earnedTitles = []) {
@@ -630,20 +682,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const cntAll = document.querySelector('#cnt-chip-all');
     const cntGame = document.querySelector('#cnt-chip-game');
     const cntSkill = document.querySelector('#cnt-chip-skill');
+    const hideEndedToggle = document.querySelector('#toggle-hide-ended');
     if (!grid) return;
 
-    // Convert earned titles into normalized strings set
-    const completedSet = new Set((earnedTitles || []).map(normalizeBadgeTitle));
+    const shouldHideEnded = hideEndedToggle ? hideEndedToggle.checked : true;
 
-    // Filter out badges already completed by the learner
+    // Filter out completed badges and ended games
     const incompleteBadges = MASTER_ARCADE_BADGES_CATALOG.filter(item => {
-      const itemNorm = normalizeBadgeTitle(item.title);
-      if (!itemNorm) return true;
-      const isCompleted = Array.from(completedSet).some(earnedNorm => {
-        if (!earnedNorm || earnedNorm.length < 4) return false;
-        return earnedNorm.includes(itemNorm) || itemNorm.includes(earnedNorm);
-      });
-      return !isCompleted;
+      // 1. Check if badge is marked completed by learner
+      if (isBadgeCompleted(item.title, earnedTitles)) {
+        return false;
+      }
+
+      // 2. Check if item is an ended game and user checked "Hide Ended Games"
+      if (shouldHideEnded && item.category === 'Game' && item.isEnded) {
+        return false;
+      }
+
+      return true;
     });
 
     // Update Category Chips Counts dynamically
@@ -695,15 +751,22 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // Filter Chips Listeners
+  // Filter Chips & Checkbox Listeners
   const chipAll = document.querySelector('#chip-filter-all');
   const chipGame = document.querySelector('#chip-filter-game');
   const chipSkill = document.querySelector('#chip-filter-skill');
   const searchInput = document.querySelector('#badge-search-input');
+  const toggleHideEnded = document.querySelector('#toggle-hide-ended');
 
   if (chipAll) chipAll.onclick = () => { setActiveChip(chipAll, 'all'); };
   if (chipGame) chipGame.onclick = () => { setActiveChip(chipGame, 'game'); };
   if (chipSkill) chipSkill.onclick = () => { setActiveChip(chipSkill, 'skill'); };
+
+  if (toggleHideEnded) {
+    toggleHideEnded.onchange = () => {
+      renderIncompleteBadges(currentProfileData.earnedBadgeTitles || []);
+    };
+  }
 
   function setActiveChip(btn, cat) {
     [chipAll, chipGame, chipSkill].forEach(c => c && c.classList.remove('active'));
@@ -719,7 +782,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Initial render of incomplete badges (Displays all catalog items before profile is evaluated)
+  // Initial render of incomplete badges
   renderIncompleteBadges([]);
 
   // Render Scraped Profile Data onto Dashboard UI
