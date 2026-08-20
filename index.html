@@ -36,6 +36,7 @@
         <ul class="google-nav-tabs">
           <li><button type="button" class="nav-tab-btn active" id="tab-home">Home</button></li>
           <li><button type="button" class="nav-tab-btn" id="tab-dashboard">Dashboard</button></li>
+          <li><button type="button" class="nav-tab-btn" id="tab-leaderboard">Leaderboard</button></li>
         </ul>
       </nav>
 
@@ -74,6 +75,13 @@
             Calculate<br>Points
           </button>
         </form>
+
+        <div class="preset-chips-row">
+          <span style="color: var(--text-dim); font-size: 0.85rem; font-weight: 500;">Quick Demo:</span>
+          <button type="button" class="preset-chip-btn" id="demo-profile-btn" data-url="https://www.skills.google/public_profiles/907d1ea5-38d8-4376-8954-11b0a4b10015">
+            <i class="fa-solid fa-user-check"></i> Try Sample Profile (113 Badges)
+          </button>
+        </div>
 
         <div class="hero-help-row">
           <span class="help-icon-red">?</span>
@@ -219,34 +227,34 @@
                     <div class="timeline-line-fill" id="timeline-fill-bar" style="width: 0%;"></div>
                   </div>
 
-                  <div class="step-node completed" id="node-start">
+                  <div class="step-node interactive-node completed" id="node-start" data-milestone="start" role="button" tabindex="0">
                     <div class="node-circle"><i class="fa-solid fa-check"></i></div>
                     <span class="node-label">Start</span>
                     <span class="node-pts">0 pts</span>
                   </div>
 
-                  <div class="step-node" id="node-m1">
+                  <div class="step-node interactive-node" id="node-m1" data-milestone="m1" role="button" tabindex="0">
                     <div class="node-circle"><i class="fa-solid fa-circle"></i></div>
                     <span class="node-label">Milestone 1</span>
                     <span class="node-pts">+5 pts</span>
                     <span class="node-status">Locked</span>
                   </div>
 
-                  <div class="step-node" id="node-m2">
+                  <div class="step-node interactive-node" id="node-m2" data-milestone="m2" role="button" tabindex="0">
                     <div class="node-circle"><i class="fa-solid fa-circle"></i></div>
                     <span class="node-label">Milestone 2</span>
                     <span class="node-pts">+15 pts</span>
                     <span class="node-status">Locked</span>
                   </div>
 
-                  <div class="step-node" id="node-m3">
+                  <div class="step-node interactive-node" id="node-m3" data-milestone="m3" role="button" tabindex="0">
                     <div class="node-circle"><i class="fa-solid fa-circle"></i></div>
                     <span class="node-label">Milestone 3</span>
                     <span class="node-pts">+25 pts</span>
                     <span class="node-status">Locked</span>
                   </div>
 
-                  <div class="step-node" id="node-ultimate">
+                  <div class="step-node interactive-node active-selected" id="node-ultimate" data-milestone="ultimate" role="button" tabindex="0">
                     <div class="node-circle"><i class="fa-solid fa-circle"></i></div>
                     <span class="node-label">Ultimate</span>
                     <span class="node-pts">+35 pts</span>
@@ -254,14 +262,14 @@
                   </div>
                 </div>
 
-                <!-- Ultimate Milestone Requirements Box -->
+                <!-- Milestone Requirements Box -->
                 <div class="requirements-box">
                   <div class="req-header">
                     <div class="req-title">
-                      <span>Ultimate Milestone Requirements</span>
+                      <span id="req-box-title">Ultimate Milestone Requirements</span>
                       <span class="achieved-tag tag-progress" id="ultimate-status-tag">In Progress ⏳</span>
                     </div>
-                    <span class="pts-badge-green" id="ultimate-pts-tag">+35 pts</span>
+                    <span class="pts-badge-green" id="req-box-pts-tag">+35 pts</span>
                   </div>
 
                   <div class="req-bars-grid">
@@ -421,6 +429,62 @@
             </div>
 
           </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================================================================
+         LEADERBOARD VIEW
+         =================================================================== -->
+    <div id="view-leaderboard" class="page-view hidden">
+      <section class="dashboard-section">
+        <div class="container">
+          
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main);">
+              <i class="fa-solid fa-trophy" style="color: var(--amber-accent);"></i> Google Cloud Arcade Global Leaderboard
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Real-time ranking of top Google Cloud Arcade learners & Facilitator participants</p>
+          </div>
+
+          <!-- Leaderboard Search & Stats Row -->
+          <div style="display: flex; gap: 1rem; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap;">
+            <div style="position: relative; max-width: 400px; width: 100%;">
+              <input 
+                type="text" 
+                id="leaderboard-search" 
+                placeholder="Search participant by name..." 
+                style="width: 100%; padding: 0.65rem 1rem 0.65rem 2.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-main); font-size: 0.9rem;"
+              />
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-dim);"></i>
+            </div>
+            
+            <div style="display: flex; gap: 1rem;">
+              <span class="season-badge-tag">🏆 4,280 Active Learners</span>
+              <span class="season-badge-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--green-accent);">⚡ Live Sync Active</span>
+            </div>
+          </div>
+
+          <!-- Leaderboard Table Card -->
+          <article class="dash-card">
+            <table class="badge-table">
+              <thead>
+                <tr>
+                  <th style="width: 80px;">Rank</th>
+                  <th>Participant</th>
+                  <th>Skill Badges</th>
+                  <th>Arcade Games</th>
+                  <th>Facilitator Bonus</th>
+                  <th>Total Points</th>
+                  <th>Swag Tier</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-table-body">
+                <!-- Populated dynamically via app.js -->
+              </tbody>
+            </table>
+          </article>
+
         </div>
       </section>
     </div>

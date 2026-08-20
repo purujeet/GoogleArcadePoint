@@ -7,15 +7,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Navigation & Views
   const tabHome = document.querySelector('#tab-home');
   const tabDashboard = document.querySelector('#tab-dashboard');
+  const tabLeaderboard = document.querySelector('#tab-leaderboard');
   const brandLink = document.querySelector('#brand-home-link');
 
   const viewHome = document.querySelector('#view-home');
   const viewDashboard = document.querySelector('#view-dashboard');
+  const viewLeaderboard = document.querySelector('#view-leaderboard');
 
   // Form & Inputs
   const heroForm = document.querySelector('#hero-calc-form');
   const profileUrlInput = document.querySelector('#profile-url-input');
   const heroCalcBtn = document.querySelector('#hero-calc-btn');
+  const demoProfileBtn = document.querySelector('#demo-profile-btn');
 
   // Help Modal
   const helpTrigger = document.querySelector('#help-modal-trigger');
@@ -25,24 +28,51 @@ document.addEventListener('DOMContentLoaded', () => {
   // Theme Toggle
   const themeToggleBtn = document.querySelector('#theme-toggle-btn');
 
+  // Global State for Scraped Profile Data
+  let currentProfileData = {
+    arcadeGames: 0,
+    skillBadges: 0,
+    bonusPoints: 0
+  };
+
   // Switch View Helper
   function switchView(viewName) {
+    if (viewHome) viewHome.classList.add('hidden');
+    if (viewDashboard) viewDashboard.classList.add('hidden');
+    if (viewLeaderboard) viewLeaderboard.classList.add('hidden');
+
+    if (tabHome) tabHome.classList.remove('active');
+    if (tabDashboard) tabDashboard.classList.remove('active');
+    if (tabLeaderboard) tabLeaderboard.classList.remove('active');
+
     if (viewName === 'home') {
-      viewHome.classList.remove('hidden');
-      viewDashboard.classList.add('hidden');
-      tabHome.classList.add('active');
-      tabDashboard.classList.remove('active');
+      if (viewHome) viewHome.classList.remove('hidden');
+      if (tabHome) tabHome.classList.add('active');
     } else if (viewName === 'dashboard') {
-      viewHome.classList.add('hidden');
-      viewDashboard.classList.remove('hidden');
-      tabHome.classList.remove('active');
-      tabDashboard.classList.add('active');
+      if (viewDashboard) viewDashboard.classList.remove('hidden');
+      if (tabDashboard) tabDashboard.classList.add('active');
+    } else if (viewName === 'leaderboard') {
+      if (viewLeaderboard) viewLeaderboard.classList.remove('hidden');
+      if (tabLeaderboard) tabLeaderboard.classList.add('active');
+      renderLeaderboard();
     }
   }
 
   if (tabHome) tabHome.addEventListener('click', () => switchView('home'));
   if (tabDashboard) tabDashboard.addEventListener('click', () => switchView('dashboard'));
+  if (tabLeaderboard) tabLeaderboard.addEventListener('click', () => switchView('leaderboard'));
   if (brandLink) brandLink.addEventListener('click', (e) => { e.preventDefault(); switchView('home'); });
+
+  // Preset Demo Profile Handler
+  if (demoProfileBtn) {
+    demoProfileBtn.addEventListener('click', () => {
+      const demoUrl = demoProfileBtn.getAttribute('data-url');
+      if (demoUrl && profileUrlInput) {
+        profileUrlInput.value = demoUrl;
+        processCalculation(demoUrl);
+      }
+    });
+  }
 
   // Theme Toggle
   if (themeToggleBtn) {
@@ -262,8 +292,130 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  // --- INTERACTIVE MILESTONE SELECTION LOGIC ---
+  const MILESTONE_DEFINITIONS = {
+    start: {
+      title: 'Milestone Start Baseline',
+      reqGames: 0,
+      reqSkills: 0,
+      bonusPts: 0
+    },
+    m1: {
+      title: 'Milestone 1 Requirements',
+      reqGames: 4,
+      reqSkills: 14,
+      bonusPts: 5
+    },
+    m2: {
+      title: 'Milestone 2 Requirements',
+      reqGames: 6,
+      reqSkills: 28,
+      bonusPts: 15
+    },
+    m3: {
+      title: 'Milestone 3 Requirements',
+      reqGames: 8,
+      reqSkills: 42,
+      bonusPts: 25
+    },
+    ultimate: {
+      title: 'Ultimate Milestone Requirements',
+      reqGames: 10,
+      reqSkills: 66,
+      bonusPts: 35
+    }
+  };
+
+  function selectMilestone(milestoneKey) {
+    const config = MILESTONE_DEFINITIONS[milestoneKey] || MILESTONE_DEFINITIONS.ultimate;
+
+    // Highlight timeline node
+    document.querySelectorAll('.interactive-node').forEach(node => {
+      if (node.getAttribute('data-milestone') === milestoneKey) {
+        node.classList.add('active-selected');
+      } else {
+        node.classList.remove('active-selected');
+      }
+    });
+
+    const titleEl = document.querySelector('#req-box-title');
+    const ptsTagEl = document.querySelector('#req-box-pts-tag');
+    const reqGamesEl = document.querySelector('#req-games-count');
+    const reqSkillsEl = document.querySelector('#req-skills-count');
+    const barGamesEl = document.querySelector('#bar-fill-games');
+    const barSkillsEl = document.querySelector('#bar-fill-skills');
+    const iconGameCheck = document.querySelector('#icon-game-check');
+    const iconSkillCheck = document.querySelector('#icon-skill-check');
+    const ultimateStatusTag = document.querySelector('#ultimate-status-tag');
+
+    const games = currentProfileData.arcadeGames || 0;
+    const skills = currentProfileData.skillBadges || 0;
+
+    if (titleEl) titleEl.textContent = config.title;
+    if (ptsTagEl) ptsTagEl.textContent = `+${config.bonusPts} pts`;
+
+    if (reqGamesEl) reqGamesEl.textContent = `${games} / ${config.reqGames}`;
+    if (reqSkillsEl) reqSkillsEl.textContent = `${skills} / ${config.reqSkills}`;
+
+    const gamePct = config.reqGames > 0 ? Math.min((games / config.reqGames) * 100, 100) : 100;
+    const skillPct = config.reqSkills > 0 ? Math.min((skills / config.reqSkills) * 100, 100) : 100;
+
+    if (barGamesEl) barGamesEl.style.width = `${gamePct}%`;
+    if (barSkillsEl) barSkillsEl.style.width = `${skillPct}%`;
+
+    const isGameDone = games >= config.reqGames;
+    const isSkillDone = skills >= config.reqSkills;
+    const isCompleted = isGameDone && isSkillDone;
+
+    if (iconGameCheck) {
+      if (isGameDone) {
+        iconGameCheck.className = 'fa-solid fa-circle-check';
+        iconGameCheck.style.color = 'var(--green-accent)';
+      } else {
+        iconGameCheck.className = 'fa-solid fa-circle-xmark';
+        iconGameCheck.style.color = 'var(--text-dim)';
+      }
+    }
+
+    if (iconSkillCheck) {
+      if (isSkillDone) {
+        iconSkillCheck.className = 'fa-solid fa-circle-check';
+        iconSkillCheck.style.color = 'var(--green-accent)';
+      } else {
+        iconSkillCheck.className = 'fa-solid fa-circle-xmark';
+        iconSkillCheck.style.color = 'var(--text-dim)';
+      }
+    }
+
+    if (ultimateStatusTag) {
+      if (isCompleted) {
+        ultimateStatusTag.textContent = 'Achieved! 🎉';
+        ultimateStatusTag.className = 'achieved-tag tag-achieved';
+      } else {
+        ultimateStatusTag.textContent = 'In Progress ⏳';
+        ultimateStatusTag.className = 'achieved-tag tag-progress';
+      }
+    }
+  }
+
+  // Attach Click & Keyboard Listeners for Timeline Nodes
+  document.querySelectorAll('.interactive-node').forEach(node => {
+    const milestoneKey = node.getAttribute('data-milestone');
+    if (!milestoneKey) return;
+
+    node.addEventListener('click', () => selectMilestone(milestoneKey));
+    node.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectMilestone(milestoneKey);
+      }
+    });
+  });
+
   // Render Scraped Profile Data onto Dashboard UI
   function renderDashboard(data) {
+    currentProfileData = data;
+
     // User Profile Card & Top Nav Avatar
     const avatarEl = document.querySelector('#avatar-initial');
     const navAvatarEl = document.querySelector('#nav-avatar-initial');
@@ -332,55 +484,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const timelineBar = document.querySelector('#timeline-fill-bar');
     if (timelineBar) timelineBar.style.width = `${timelinePct}%`;
 
-    // Ultimate Milestone Box
-    const reqGames = document.querySelector('#req-games-count');
-    const reqSkills = document.querySelector('#req-skills-count');
     const bonusText = document.querySelector('#bonus-amount-text');
-    const barGames = document.querySelector('#bar-fill-games');
-    const barSkills = document.querySelector('#bar-fill-skills');
-    const iconGameCheck = document.querySelector('#icon-game-check');
-    const iconSkillCheck = document.querySelector('#icon-skill-check');
-    const ultimateStatusTag = document.querySelector('#ultimate-status-tag');
-
-    if (reqGames) reqGames.textContent = `${games} / 10`;
-    if (reqSkills) reqSkills.textContent = `${skills} / 66`;
     if (bonusText) bonusText.textContent = `+${data.bonusPoints || 0} Bonus Points Earned`;
 
-    const gamePct = Math.min((games / 10) * 100, 100);
-    const skillPct = Math.min((skills / 66) * 100, 100);
+    // Auto-select highest achieved milestone (or ultimate default)
+    let autoMilestone = 'ultimate';
+    if (!hasM1) autoMilestone = 'm1';
+    else if (!hasM2) autoMilestone = 'm2';
+    else if (!hasM3) autoMilestone = 'm3';
+    else autoMilestone = 'ultimate';
 
-    if (barGames) barGames.style.width = `${gamePct}%`;
-    if (barSkills) barSkills.style.width = `${skillPct}%`;
-
-    if (iconGameCheck) {
-      if (games >= 10) {
-        iconGameCheck.className = 'fa-solid fa-circle-check';
-        iconGameCheck.style.color = 'var(--green-accent)';
-      } else {
-        iconGameCheck.className = 'fa-solid fa-circle-xmark';
-        iconGameCheck.style.color = 'var(--text-dim)';
-      }
-    }
-
-    if (iconSkillCheck) {
-      if (skills >= 66) {
-        iconSkillCheck.className = 'fa-solid fa-circle-check';
-        iconSkillCheck.style.color = 'var(--green-accent)';
-      } else {
-        iconSkillCheck.className = 'fa-solid fa-circle-xmark';
-        iconSkillCheck.style.color = 'var(--text-dim)';
-      }
-    }
-
-    if (ultimateStatusTag) {
-      if (hasUltimate) {
-        ultimateStatusTag.textContent = 'Achieved! 🎉';
-        ultimateStatusTag.className = 'achieved-tag tag-achieved';
-      } else {
-        ultimateStatusTag.textContent = 'In Progress ⏳';
-        ultimateStatusTag.className = 'achieved-tag tag-progress';
-      }
-    }
+    selectMilestone(autoMilestone);
 
     // --- 2. DYNAMIC SWAG TIER EVALUATION ---
     const totalPts = data.totalPoints || 0;
@@ -463,6 +577,64 @@ document.addEventListener('DOMContentLoaded', () => {
     if (rowTriviaPts) rowTriviaPts.textContent = `${((data.triviaBadges || 0) * 1.0).toFixed(1)} Pts`;
     if (rowCompletionCount) rowCompletionCount.textContent = data.completionBadges || 0;
     if (rowBonusPts) rowBonusPts.textContent = `+${data.bonusPoints || 0}.0 Pts`;
+  }
+
+  // --- LEADERBOARD COMPONENT & RENDERER ---
+  const MOCK_LEADERBOARD = [
+    { rank: 1, name: 'purujeet singhal', skills: 94, games: 10, bonus: 35, totalPts: 93.0, tier: 'Ranger 🚀' },
+    { rank: 2, name: 'Ananya Sharma', skills: 72, games: 10, bonus: 35, totalPts: 82.0, tier: 'Ranger 🚀' },
+    { rank: 3, name: 'Vikramaditya Rao', skills: 68, games: 8, bonus: 25, totalPts: 67.0, tier: 'Trooper 📦' },
+    { rank: 4, name: 'Priya Patel', skills: 54, games: 8, bonus: 25, totalPts: 60.0, tier: 'Trooper 📦' },
+    { rank: 5, name: 'Rohan Mehta', skills: 48, games: 6, bonus: 15, totalPts: 45.0, tier: 'Explorer 🔍' },
+    { rank: 6, name: 'Sneha Kulkarni', skills: 36, games: 6, bonus: 15, totalPts: 39.0, tier: 'Explorer 🔍' },
+    { rank: 7, name: 'Aarav Gupta', skills: 28, games: 4, bonus: 5, totalPts: 24.0, tier: 'Explorer 🔍' },
+    { rank: 8, name: 'Divya Nair', skills: 20, games: 4, bonus: 5, totalPts: 20.0, tier: 'Explorer 🔍' }
+  ];
+
+  function renderLeaderboard(filterQuery = '') {
+    const tbody = document.querySelector('#leaderboard-table-body');
+    if (!tbody) return;
+
+    const query = filterQuery.toLowerCase().trim();
+    const filtered = MOCK_LEADERBOARD.filter(item => item.name.toLowerCase().includes(query));
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-dim);">No participants found matching "${filterQuery}"</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(item => {
+      let rankBadge = `#${item.rank}`;
+      if (item.rank === 1) rankBadge = '🥇 #1';
+      else if (item.rank === 2) rankBadge = '🥈 #2';
+      else if (item.rank === 3) rankBadge = '🥉 #3';
+
+      const initial = item.name[0].toUpperCase();
+      return `
+        <tr>
+          <td><strong style="color: ${item.rank <= 3 ? 'var(--amber-accent)' : 'var(--text-main)'};">${rankBadge}</strong></td>
+          <td>
+            <div class="badge-cat-cell">
+              <div class="google-avatar" style="width: 32px; height: 32px; font-size: 0.85rem; background: var(--google-blue-dark);">${initial}</div>
+              <strong style="color: var(--text-main);">${item.name}</strong>
+            </div>
+          </td>
+          <td>${item.skills} Badges</td>
+          <td>${item.games} Games</td>
+          <td style="color: var(--green-accent); font-weight: 600;">+${item.bonus} Pts</td>
+          <td class="pts-highlight">${item.totalPts.toFixed(1)} Pts</td>
+          <td><span class="season-badge-tag">${item.tier}</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Leaderboard Search Filter Event Listener
+  const searchInput = document.querySelector('#leaderboard-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      renderLeaderboard(e.target.value);
+    });
   }
 
   // Hero Form Submit Event

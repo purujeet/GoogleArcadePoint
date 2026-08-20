@@ -21,6 +21,10 @@ EXCLUDED_COMPLETION_BADGES = [
     'build a certification study guide: ace exam prep'
 ]
 
+class HTTPMethodFallbackRedirectHandler(urllib.request.HTTPRedirectHandler):
+    def http_error_308(self, req, fp, code, msg, headers):
+        return self.http_error_302(req, fp, code, msg, headers)
+
 class ArcadeCalcHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
@@ -68,8 +72,9 @@ class ArcadeCalcHandler(http.server.SimpleHTTPRequestHandler):
         }
 
         req = urllib.request.Request(target_url, headers=headers)
+        opener = urllib.request.build_opener(HTTPMethodFallbackRedirectHandler)
         
-        with urllib.request.urlopen(req, timeout=12) as response:
+        with opener.open(req, timeout=12) as response:
             html = response.read().decode('utf-8', errors='ignore')
 
         # 1. Extract User Name
