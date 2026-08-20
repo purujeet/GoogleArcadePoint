@@ -149,13 +149,13 @@ class ArcadeCalcHandler(http.server.SimpleHTTPRequestHandler):
 
         # 6. Facilitator Program Milestone Calculation
         bonus_points = 0
-        if len(arcade_games) >= 10 and len(skill_badges) >= 66:
+        if len(arcade_games) >= 12 and len(skill_badges) >= 66:
             bonus_points = 35
-        elif len(arcade_games) >= 8 and len(skill_badges) >= 42:
+        elif len(arcade_games) >= 10 and len(skill_badges) >= 50:
             bonus_points = 25
-        elif len(arcade_games) >= 6 and len(skill_badges) >= 28:
+        elif len(arcade_games) >= 8 and len(skill_badges) >= 34:
             bonus_points = 15
-        elif len(arcade_games) >= 4 and len(skill_badges) >= 14:
+        elif len(arcade_games) >= 6 and len(skill_badges) >= 18:
             bonus_points = 5
 
         total_points = arcade_points + bonus_points

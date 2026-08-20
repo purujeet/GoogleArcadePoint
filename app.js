@@ -294,13 +294,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const arcadePoints = ptsGames + ptsTrivia + ptsSpecial + ptsSkills;
 
     let bonusPoints = 0;
-    if (arcadeGames.length >= 10 && skillBadges.length >= 66) {
+    if (arcadeGames.length >= 12 && skillBadges.length >= 66) {
       bonusPoints = 35;
-    } else if (arcadeGames.length >= 8 && skillBadges.length >= 42) {
+    } else if (arcadeGames.length >= 10 && skillBadges.length >= 50) {
       bonusPoints = 25;
-    } else if (arcadeGames.length >= 6 && skillBadges.length >= 28) {
+    } else if (arcadeGames.length >= 8 && skillBadges.length >= 34) {
       bonusPoints = 15;
-    } else if (arcadeGames.length >= 4 && skillBadges.length >= 14) {
+    } else if (arcadeGames.length >= 6 && skillBadges.length >= 18) {
       bonusPoints = 5;
     }
 
@@ -334,25 +334,25 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     m1: {
       title: 'Milestone 1 Requirements',
-      reqGames: 4,
-      reqSkills: 14,
+      reqGames: 6,
+      reqSkills: 18,
       bonusPts: 5
     },
     m2: {
       title: 'Milestone 2 Requirements',
-      reqGames: 6,
-      reqSkills: 28,
+      reqGames: 8,
+      reqSkills: 34,
       bonusPts: 15
     },
     m3: {
       title: 'Milestone 3 Requirements',
-      reqGames: 8,
-      reqSkills: 42,
+      reqGames: 10,
+      reqSkills: 50,
       bonusPts: 25
     },
     ultimate: {
       title: 'Ultimate Milestone Requirements',
-      reqGames: 10,
+      reqGames: 12,
       reqSkills: 66,
       bonusPts: 35
     }
@@ -524,15 +524,15 @@ document.addEventListener('DOMContentLoaded', () => {
         id: 'facilitator-hero',
         icon: '🌟',
         title: 'Facilitator Hero',
-        desc: 'Unlocked Milestone 1+ (+5 Bonus Points)',
-        isUnlocked: games >= 4 && skills >= 14
+        desc: 'Unlocked Milestone 1+ (6 Games & 18 Skills)',
+        isUnlocked: games >= 6 && skills >= 18
       },
       {
         id: 'ultimate-legend',
         icon: '👑',
         title: 'Ultimate Champion',
-        desc: 'Achieved Ultimate Milestone (10 Games & 66 Skills)',
-        isUnlocked: games >= 10 && skills >= 66
+        desc: 'Achieved Ultimate Milestone (12 Games & 66 Skills)',
+        isUnlocked: games >= 12 && skills >= 66
       }
     ];
 
@@ -867,10 +867,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const games = data.arcadeGames || 0;
     const skills = data.skillBadges || 0;
 
-    const hasM1 = games >= 4 && skills >= 14;
-    const hasM2 = games >= 6 && skills >= 28;
-    const hasM3 = games >= 8 && skills >= 42;
-    const hasUltimate = games >= 10 && skills >= 66;
+    const hasM1 = games >= 6 && skills >= 18;
+    const hasM2 = games >= 8 && skills >= 34;
+    const hasM3 = games >= 10 && skills >= 50;
+    const hasUltimate = games >= 12 && skills >= 66;
 
     function setStepNodeState(nodeId, isCompleted) {
       const node = document.querySelector(nodeId);
