@@ -11,14 +11,20 @@ from datetime import datetime
 PORT = 8080
 DIRECTORY = "/Users/purujeetsinghal/Desktop/projects/arcade points"
 
-# Non-skill completion badges (introductory non-lab courses, deprecated courses, study guides)
+# Non-skill completion badges (introductory non-lab courses, Flutter courses, deprecated courses, study guides)
 EXCLUDED_COMPLETION_BADGES = [
+    'flutter development',
+    'flutter',
+    'dart',
     'safe spaces',
     'introduction to generative ai',
     'introduction to large language models',
     'introduction to responsible ai',
     'introduction to image generation',
-    'build a certification study guide: ace exam prep'
+    'build a certification study guide: ace exam prep',
+    'kickstarting application development with gemini code assist',
+    'google deepmind: train a small language model',
+    'spans and plans'
 ]
 
 class HTTPMethodFallbackRedirectHandler(urllib.request.HTTPRedirectHandler):

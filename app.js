@@ -101,14 +101,20 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/&gt;/g, '>');
   }
 
-  // Non-Skill Completion Badges Excluded List
+  // Non-Skill Course Completion Badges Excluded List (Flutter, non-lab intro courses, study guides)
   const EXCLUDED_COMPLETION_BADGES = [
+    'flutter development',
+    'flutter',
+    'dart',
     'safe spaces',
     'introduction to generative ai',
     'introduction to large language models',
     'introduction to responsible ai',
     'introduction to image generation',
-    'build a certification study guide: ace exam prep'
+    'build a certification study guide: ace exam prep',
+    'kickstarting application development with gemini code assist',
+    'google deepmind: train a small language model',
+    'spans and plans'
   ];
 
   // Dynamic Profile Evaluation Handler with Fail-Safe Reset
@@ -268,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalDesc = modalTexts[modalId] || '';
 
         let isSkillBadge = modalDesc.includes('skill badge') || lower.includes('skill badge');
-        if (title.startsWith('[Deprecated]') || EXCLUDED_COMPLETION_BADGES.includes(lower)) {
+        if (title.startsWith('[Deprecated]') || EXCLUDED_COMPLETION_BADGES.some(ex => lower.includes(ex))) {
           isSkillBadge = false;
         }
 
@@ -544,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // --- DYNAMIC INCOMPLETE BADGES ENGINE WITH MASTER CATALOG & FUZZY TOKEN MATCHER ---
+  // --- DYNAMIC INCOMPLETE BADGES ENGINE WITH EXCLUSIVE SKILL BADGES MASTER CATALOG ---
   const MASTER_ARCADE_BADGES_CATALOG = [
     // --- GAME BADGES (Marked with isEnded flag for past seasons/ended games) ---
     { title: 'Arcade Base Camp: Cloud Essentials', category: 'Game', level: 'Introductory', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5000', icon: 'fa-gamepad', isEnded: true },
@@ -552,7 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { title: 'Level 2: Modern Application Deployment', category: 'Game', level: 'Intermediate', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5226', icon: 'fa-gamepad', isEnded: true },
     { title: 'Level 3: Advanced App Operations', category: 'Game', level: 'Advanced', labsOrPts: '1 Points', link: 'https://www.cloudskillsboost.google/games/5227', icon: 'fa-gamepad', isEnded: true },
 
-    // --- ACTIVE SKILL BADGES ---
+    // --- OFFICIAL GOOGLE CLOUD SKILL BADGES (EXCLUSIVELY ASSESSMENT SKILL BADGES ONLY) ---
     { title: 'Perform Foundational Infrastructure Tasks in Google Cloud', category: 'Skill', level: 'Introductory', labsOrPts: '5 Labs', link: 'https://www.cloudskillsboost.google/course_templates/639', icon: 'fa-certificate' },
     { title: 'Set Up an App Dev Environment in Google Cloud', category: 'Skill', level: 'Introductory', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/637', icon: 'fa-certificate' },
     { title: 'Implement DevOps Workflows in Google Cloud', category: 'Skill', level: 'Intermediate', labsOrPts: '4 Labs', link: 'https://www.cloudskillsboost.google/course_templates/341', icon: 'fa-certificate' },
@@ -627,6 +633,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentBadgeCategoryFilter = 'all';
   let currentSearchQuery = '';
 
+  // Helper validator to exclude non-skill courses (Flutter, intro courses, study guides, etc.)
+  function isOfficialSkillBadgeItem(title) {
+    if (!title) return false;
+    const lower = title.toLowerCase();
+    return !EXCLUDED_COMPLETION_BADGES.some(ex => lower.includes(ex));
+  }
+
   // Extract set of significant keyword tokens for fuzzy matching
   function getBadgeTokens(str) {
     if (!str) return new Set();
@@ -687,8 +700,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const shouldHideEnded = hideEndedToggle ? hideEndedToggle.checked : true;
 
-    // Filter out completed badges and ended games
+    // Filter out non-skill courses, completed badges, and ended games
     const incompleteBadges = MASTER_ARCADE_BADGES_CATALOG.filter(item => {
+      // 0. Ensure item is an official skill badge or game badge, not a course
+      if (!isOfficialSkillBadgeItem(item.title)) {
+        return false;
+      }
+
       // 1. Check if badge is marked completed by learner
       if (isBadgeCompleted(item.title, earnedTitles)) {
         return false;
