@@ -532,8 +532,8 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // --- DYNAMIC INCOMPLETE & RECOMMENDED CHALLENGE BADGES ENGINE ---
-  const RECOMMENDED_BADGES_LIST = [
+  // --- DYNAMIC INCOMPLETE BADGES ENGINE ---
+  const MASTER_ARCADE_BADGES_CATALOG = [
     {
       id: 'rec-1',
       title: 'Arcade Re-Trail: Vaults & Vectors',
@@ -683,7 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentBadgeCategoryFilter = 'all';
   let currentSearchQuery = '';
 
-  function renderRecommendedBadges(earnedTitles = []) {
+  function renderIncompleteBadges(earnedTitles = []) {
     const grid = document.querySelector('#recommended-badges-grid');
     const cntAll = document.querySelector('#cnt-chip-all');
     const cntGame = document.querySelector('#cnt-chip-game');
@@ -694,7 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const completedSet = new Set((earnedTitles || []).map(t => t.toLowerCase().trim()));
 
     // Dynamically filter out badges already completed by the learner
-    const incompleteBadges = RECOMMENDED_BADGES_LIST.filter(item => {
+    const incompleteBadges = MASTER_ARCADE_BADGES_CATALOG.filter(item => {
       const itemTitleLower = item.title.toLowerCase().trim();
       const isCompleted = Array.from(completedSet).some(earned => {
         return earned.includes(itemTitleLower) || itemTitleLower.includes(earned);
@@ -719,7 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (filtered.length === 0) {
       if (incompleteBadges.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green-accent); border-radius: var(--radius-md); color: var(--green-accent);"><i class="fa-solid fa-trophy" style="font-size: 2rem; margin-bottom: 0.5rem;"></i><h4 style="font-size: 1.1rem; font-weight: 700;">Outstanding Work!</h4><p style="font-size: 0.9rem; margin-top: 0.25rem;">You have completed all recommended challenge badges for this season!</p></div>';
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green-accent); border-radius: var(--radius-md); color: var(--green-accent);"><i class="fa-solid fa-circle-check" style="font-size: 2rem; margin-bottom: 0.5rem;"></i><h4 style="font-size: 1.1rem; font-weight: 700;">No Incomplete Badges Remaining!</h4><p style="font-size: 0.9rem; margin-top: 0.25rem;">You have completed all active Arcade challenge badges!</p></div>';
       } else {
         grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-dim);">No incomplete badges matching your search query.</div>';
       }
@@ -765,18 +765,18 @@ document.addEventListener('DOMContentLoaded', () => {
     [chipAll, chipGame, chipSkill].forEach(c => c && c.classList.remove('active'));
     if (btn) btn.classList.add('active');
     currentBadgeCategoryFilter = cat;
-    renderRecommendedBadges(currentProfileData.earnedBadgeTitles || []);
+    renderIncompleteBadges(currentProfileData.earnedBadgeTitles || []);
   }
 
   if (searchInput) {
     searchInput.oninput = (e) => {
       currentSearchQuery = e.target.value.trim();
-      renderRecommendedBadges(currentProfileData.earnedBadgeTitles || []);
+      renderIncompleteBadges(currentProfileData.earnedBadgeTitles || []);
     };
   }
 
-  // Initial render of recommended badges
-  renderRecommendedBadges([]);
+  // Initial render of incomplete badges
+  renderIncompleteBadges([]);
 
   // Render Scraped Profile Data onto Dashboard UI
   function renderDashboard(data) {
@@ -797,7 +797,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gamification Engines
     updateXPLevel(data.totalPoints || 0);
     renderAchievements(data);
-    renderRecommendedBadges(data.earnedBadgeTitles || []);
+    renderIncompleteBadges(data.earnedBadgeTitles || []);
 
     // Stats Card
     const formulaArcade = document.querySelector('#val-arcade-raw');
